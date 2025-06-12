@@ -1,175 +1,71 @@
 from dash import dcc, html, callback, Output, Input
+import plotly.graph_objects as go
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objs as go
 
-# Chargement et nettoyage des données
 df = pd.read_csv('assets/data_fusionnee.csv')
-df.columns = df.columns.str.strip().str.replace('"', '')
-df = df.rename(columns=lambda x: x.strip())
+df['MS_ACCDN'] = df['MS_ACCDN'].astype(int)
 
-df['GRAVITE'] = df['GRAVITE'].replace({
-    'Dommages matériels seulement': 'Matériels',
-    'Dommages matériels inférieurs au seuil de rapportage': 'Mineurs',
-    'Léger': 'Léger',
-    'Mortel ou grave': 'Grave'
-})
+def mois_vers_saison(mois):
+    if mois in [1, 2, 3]: return 'Hiver'
+    elif mois in [4, 5, 6]: return 'Printemps'
+    elif mois in [7, 8, 9]: return 'Été'
+    else: return 'Automne'
 
-# Mappings
-weather_mapping = {11: 'Clear', 12: 'Overcast', 13: 'Fog/Mist', 14: 'Rain/Drizzle', 15: 'Heavy Rain',
-                   16: 'Strong Wind', 17: 'Snow/Hail', 18: 'Blowing Snow/Storm',
-                   19: 'Freezing Rain', 99: 'Other'}
-surface_mapping = {11: 'Dry', 12: 'Wet', 13: 'Aquaplaning', 14: 'Sand/Gravel', 15: 'Slush/Snow',
-                   16: 'Snow-covered', 17: 'Hard-packed Snow', 18: 'Icy', 19: 'Muddy', 20: 'Oily', 99: 'Other'}
-lighting_mapping = {1: 'Daylight - Clear Visibility', 2: 'Daylight - Low Visibility',
-                    3: 'Night - Road Illuminated', 4: 'Night - Not Illuminated'}
-env_mapping = {1: 'School Zone', 2: 'Residential', 3: 'Business / Commercial', 4: 'Industrial',
-               5: 'Rural', 6: 'Forestry', 7: 'Recreational', 9: 'Other', 0: 'Not Specified'}
+df['SAISON'] = df['MS_ACCDN'].apply(mois_vers_saison)
+df['Gravité'] = df['GRAVITE'].apply(lambda x: 'Grave' if x == 'Mortel ou grave' else 'Autre')
 
-df['CD_COND_METEO'] = df['CD_COND_METEO'].map(weather_mapping)
-df['CD_ETAT_SURFC'] = df['CD_ETAT_SURFC'].map(surface_mapping)
-df['Lighting_Label'] = df['CD_ECLRM'].map(lighting_mapping)
-df['Environment_Label'] = df['CD_ENVRN_ACCDN'].map(env_mapping)
+etat_surface_labels = ["Sec", "Mouillé", "Aquaplanage", "Sable/Gravier", "Neige fondante",
+                       "Neige", "Neige durcie", "Glacé", "Boueux", "Autre"]
+etat_surface_codes = [11, 12, 13, 14, 15, 16, 17, 18, 19, 99]
+theta = [i * (360 / len(etat_surface_codes)) for i in range(len(etat_surface_codes))]
 
-# Dropdown options
-gravite_options = [{'label': g, 'value': g} for g in df['GRAVITE'].unique()]
+couleur_eclairement = {1: "#FFD700", 2: "#FFA500", 3: "#1E90FF", 4: "#2F4F4F"}
+label_eclairement = {1: "Jour et clarté", 2: "Jour et demi-obscurité",
+                     3: "Nuit et chemin éclairé", 4: "Nuit et chemin non éclairé"}
+saisons = sorted(df['SAISON'].dropna().unique().tolist())
 
-# Layout
 layout = html.Div([
-    html.H1("Road Accident Dashboard – Quebec", style={'textAlign': 'center'}),
-
-    html.Div([
-        dcc.Dropdown(
-            id='dashboard-dropdown',
-            options=[
-                {'label': '1. Weather', 'value': 'weather'},
-                {'label': '2. Road Surface', 'value': 'surface'},
-                {'label': '3. Lighting', 'value': 'lighting'},
-                {'label': '4. Environment', 'value': 'environment'},
-                {'label': '5. Road Defects', 'value': 'defects'},
-                {'label': '6. Construction Zones', 'value': 'construction'},
-                {'label': '7. Weather vs Surface Heatmap', 'value': 'heatmap'},
-                {'label': '8. Before / After COVID-19', 'value': 'covid'},
-            ],
-            value='weather',
-            style={'width': '50%'}
-        )
-    ], style={'marginBottom': '20px'}),
-
-    html.Div([
-        dcc.Dropdown(id='filter-gravite', options=gravite_options, placeholder="Gravité"),
-        dcc.Dropdown(id='filter-meteo', placeholder="Météo"),
-        dcc.Dropdown(id='filter-surface', placeholder="Surface"),
-        dcc.Dropdown(id='filter-env', placeholder="Environment"),
-        dcc.Dropdown(id='filter-road', placeholder="Road Defect"),
-        dcc.Dropdown(id='filter-const', placeholder="Construction Zone"),
-    ], style={'display': 'flex', 'gap': '10px', 'marginBottom': '20px'}),
-
-    html.Div(id='graph-output'),
-
-    html.Div([
-        html.Label("Filtrer par année"),
-        dcc.RangeSlider(
-            id='filter-annee',
-            min=df['AN'].min(),
-            max=df['AN'].max(),
-            value=[df['AN'].min(), df['AN'].max()],
-            marks={int(year): str(int(year)) for year in sorted(df['AN'].unique())},
-            step=1,
-            tooltip={"placement": "bottom", "always_visible": True}
-        )
-    ], style={'marginTop': '40px'})
+    html.H2("Accidents graves par type de surface et saison (Barpolar)", style={'textAlign': 'center'}),
+    dcc.Dropdown(
+        id='saison-dropdown',
+        options=[{'label': s, 'value': s} for s in saisons],
+        value=saisons[0],
+        style={'width': '50%', 'margin': '0 auto'}
+    ),
+    html.Div(id='polar-graph-container')
 ])
 
-# Activer ou désactiver certains filtres selon la sélection
 @callback(
-    Output('filter-gravite', 'disabled'),
-    Output('filter-meteo', 'disabled'),
-    Output('filter-surface', 'disabled'),
-    Output('filter-env', 'disabled'),
-    Output('filter-road', 'disabled'),
-    Output('filter-const', 'disabled'),
-    Input('dashboard-dropdown', 'value')
+    Output('polar-graph-container', 'children'),
+    Input('saison-dropdown', 'value')
 )
-def toggle_filters(selected):
-    return (
-        selected != 'covid',
-        selected in ['weather', 'heatmap'],
-        selected in ['surface', 'heatmap'],
-        selected == 'environment',
-        selected == 'defects',
-        selected == 'construction'
+def update_polar_chart(saison):
+    saison_df = df[(df['SAISON'] == saison) & (df['Gravité'] == 'Grave')]
+    fig = go.Figure()
+    max_val = 0
+    for eclairement in couleur_eclairement:
+        subset = saison_df[saison_df['CD_ECLRM'] == eclairement]
+        counts = subset.groupby('CD_ETAT_SURFC').size().reset_index(name='Nb Accidents Graves')
+        r_vals, hover_texts = [], []
+        for code, label in zip(etat_surface_codes, etat_surface_labels):
+            n = counts[counts['CD_ETAT_SURFC'] == code]['Nb Accidents Graves'].values[0] if code in counts['CD_ETAT_SURFC'].values else 0
+            max_val = max(max_val, n)
+            r_vals.append(n)
+            hover_texts.append(
+                f"Saison : {saison}<br>Surface : {label}<br>Éclairement : {label_eclairement[eclairement]}<br>Accidents graves : {n}"
+            )
+        fig.add_trace(go.Barpolar(
+            r=r_vals, theta=theta,
+            name=label_eclairement[eclairement],
+            marker_color=couleur_eclairement[eclairement],
+            hoverinfo='text', hovertext=hover_texts
+        ))
+    fig.update_layout(
+        title=f"Polar Bar Chart – Nb d'accidents graves ({saison})",
+        polar=dict(
+            radialaxis=dict(visible=True, range=[0, max_val * 1.05]),
+            angularaxis=dict(tickvals=theta, ticktext=etat_surface_labels, rotation=90, direction="clockwise")
+        ),
+        template="plotly_white", width=900, height=800
     )
-
-# Mise à jour dynamique des options de filtres
-@callback(
-    Output('filter-meteo', 'options'),
-    Output('filter-surface', 'options'),
-    Output('filter-env', 'options'),
-    Output('filter-road', 'options'),
-    Output('filter-const', 'options'),
-    Input('filter-annee', 'value'),
-    Input('filter-gravite', 'value')
-)
-def update_filter_options(annee_range, gravite):
-    filtered_df = df[(df['AN'] >= annee_range[0]) & (df['AN'] <= annee_range[1])]
-    if gravite:
-        filtered_df = filtered_df[filtered_df['GRAVITE'] == gravite]
-
-    return [
-        [{'label': v, 'value': v} for v in filtered_df['CD_COND_METEO'].dropna().unique()],
-        [{'label': v, 'value': v} for v in filtered_df['CD_ETAT_SURFC'].dropna().unique()],
-        [{'label': v, 'value': v} for v in filtered_df['Environment_Label'].dropna().unique()],
-        [{'label': v, 'value': v} for v in filtered_df['CD_ASPCT_ROUTE'].dropna().unique()],
-        [{'label': v, 'value': v} for v in filtered_df['CD_ZON_TRAVX_ROUTR'].dropna().unique()]
-    ]
-
-# Callback principal pour les graphiques
-@callback(
-    Output('graph-output', 'children'),
-    Input('dashboard-dropdown', 'value'),
-    Input('filter-annee', 'value'),
-    Input('filter-gravite', 'value'),
-    Input('filter-meteo', 'value'),
-    Input('filter-surface', 'value'),
-    Input('filter-env', 'value'),
-    Input('filter-road', 'value'),
-    Input('filter-const', 'value')
-)
-def update_graph(selected, annee_range, gravite, meteo, surface, env, road, const):
-    dff = df[(df['AN'] >= annee_range[0]) & (df['AN'] <= annee_range[1])]
-    if gravite: dff = dff[dff['GRAVITE'] == gravite]
-    if meteo: dff = dff[dff['CD_COND_METEO'] == meteo]
-    if surface: dff = dff[dff['CD_ETAT_SURFC'] == surface]
-    if env: dff = dff[dff['Environment_Label'] == env]
-    if road: dff = dff[dff['CD_ASPCT_ROUTE'] == road]
-    if const: dff = dff[dff['CD_ZON_TRAVX_ROUTR'] == const]
-
-    if selected == 'weather':
-        fig = px.histogram(dff, x='CD_COND_METEO', color='GRAVITE', barmode='group', title="Accidents by Weather")
-    elif selected == 'surface':
-        fig = px.histogram(dff, x='CD_ETAT_SURFC', color='GRAVITE', barmode='group', title="Accidents by Road Surface")
-    elif selected == 'lighting':
-        fig = px.histogram(dff, x='Lighting_Label', color='GRAVITE', barmode='group', title="Accidents by Lighting")
-    elif selected == 'environment':
-        fig = px.histogram(dff, x='Environment_Label', title="Accidents by Environment")
-    elif selected == 'defects':
-        fig = px.histogram(dff, x='CD_ASPCT_ROUTE', color='GRAVITE', barmode='group', title="Accidents by Road Defects")
-    elif selected == 'construction':
-        fig = px.histogram(dff, x='CD_ZON_TRAVX_ROUTR', color='GRAVITE', barmode='group', title="Construction Zone Accidents")
-    elif selected == 'heatmap':
-        fig = px.density_heatmap(dff[dff['GRAVITE'] == 'Grave'], x='CD_COND_METEO', y='CD_ETAT_SURFC',
-                                 title="Severe Accidents Heatmap", color_continuous_scale='Reds')
-    elif selected == 'covid':
-        fig = go.Figure([
-            go.Scatter(x=df.groupby('AN').size().index, y=df.groupby('AN').size().values,
-                       mode='lines+markers', name='Total'),
-            go.Scatter(x=df[df['GRAVITE'] == 'Grave'].groupby('AN').size().index,
-                       y=df[df['GRAVITE'] == 'Grave'].groupby('AN').size().values,
-                       mode='lines+markers', name='Graves', line=dict(color='red'))
-        ])
-        fig.update_layout(title="COVID Impact on Accidents", xaxis_title="Year", yaxis_title="Number of Accidents")
-    else:
-        return html.P("Aucune option valide sélectionnée.")
-
     return dcc.Graph(figure=fig)
