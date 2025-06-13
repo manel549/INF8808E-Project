@@ -1,13 +1,14 @@
-from dash import dcc, html, callback, Output, Input
+from dash import dcc, html, callback, Output, Input, no_update
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 
-# Chargement et nettoyage des données
+# Chargement des données
 df = pd.read_csv('assets/data_fusionnee.csv')
 df.columns = df.columns.str.strip().str.replace('"', '')
 df = df.rename(columns=lambda x: x.strip())
 
+# Préparation des colonnes
 df['GRAVITE'] = df['GRAVITE'].replace({
     'Dommages matériels seulement': 'Matériels',
     'Dommages matériels inférieurs au seuil de rapportage': 'Mineurs',
@@ -31,10 +32,41 @@ df['CD_ETAT_SURFC'] = df['CD_ETAT_SURFC'].map(surface_mapping)
 df['Lighting_Label'] = df['CD_ECLRM'].map(lighting_mapping)
 df['Environment_Label'] = df['CD_ENVRN_ACCDN'].map(env_mapping)
 
+# Régions pour carte
+df['Region'] = df['REG_ADM'].str.extract(r'([A-Za-zéèàçîôïÉÈÀÇÎÔÏ\-―\s]+)')
+region_coords = {
+    'Bas-Saint-Laurent': (48.5, -68.5),
+    'Saguenay―Lac-Saint-Jean': (48.4, -71.1),
+    'Capitale-Nationale': (47.0, -71.2),
+    'Mauricie': (46.5, -72.7),
+    'Estrie': (45.4, -71.9),
+    'Montréal': (45.5, -73.6),
+    'Outaouais': (45.6, -76.0),
+    'Abitibi-Témiscamingue': (48.1, -78.0),
+    'Côte-Nord': (50.0, -63.0),
+    'Nord-du-Québec': (52.0, -75.0),
+    'Gaspésie―Îles-de-la-Madeleine': (49.1, -65.4),
+    'Chaudière-Appalaches': (46.5, -70.5),
+    'Laval': (45.6, -73.8),
+    'Lanaudière': (46.0, -73.4),
+    'Laurentides': (46.5, -74.2),
+    'Montérégie': (45.3, -73.0),
+    'Centre-du-Québec': (46.0, -72.0)
+}
+df['lat'] = df['Region'].map(lambda x: region_coords.get(x, (None, None))[0])
+df['lon'] = df['Region'].map(lambda x: region_coords.get(x, (None, None))[1])
+
+# Carte interactive (layout)
+carte_layout = html.Div([
+    html.H3("Carte interactive des accidents par région"),
+    dcc.Graph(id='map-accidents'),
+    html.Div(id='carte-selected-region')
+])
+
 # Dropdown options
 gravite_options = [{'label': g, 'value': g} for g in df['GRAVITE'].unique()]
 
-# Layout
+# Layout principal
 layout = html.Div([
     html.H1("Road Accident Dashboard – Quebec", style={'textAlign': 'center'}),
 
@@ -50,6 +82,7 @@ layout = html.Div([
                 {'label': '6. Construction Zones', 'value': 'construction'},
                 {'label': '7. Weather vs Surface Heatmap', 'value': 'heatmap'},
                 {'label': '8. Before / After COVID-19', 'value': 'covid'},
+                {'label': '9. Carte interactive', 'value': 'carte'}
             ],
             value='weather',
             style={'width': '50%'}
@@ -81,7 +114,7 @@ layout = html.Div([
     ], style={'marginTop': '40px'})
 ])
 
-# Activer ou désactiver certains filtres selon la sélection
+# Activer / désactiver les filtres
 @callback(
     Output('filter-gravite', 'disabled'),
     Output('filter-meteo', 'disabled'),
@@ -101,7 +134,7 @@ def toggle_filters(selected):
         selected == 'construction'
     )
 
-# Mise à jour dynamique des options de filtres
+# Mise à jour des filtres selon l’année et gravité
 @callback(
     Output('filter-meteo', 'options'),
     Output('filter-surface', 'options'),
@@ -124,7 +157,7 @@ def update_filter_options(annee_range, gravite):
         [{'label': v, 'value': v} for v in filtered_df['CD_ZON_TRAVX_ROUTR'].dropna().unique()]
     ]
 
-# Callback principal pour les graphiques
+# Callback pour les graphiques (incluant la carte)
 @callback(
     Output('graph-output', 'children'),
     Input('dashboard-dropdown', 'value'),
@@ -137,6 +170,9 @@ def update_filter_options(annee_range, gravite):
     Input('filter-const', 'value')
 )
 def update_graph(selected, annee_range, gravite, meteo, surface, env, road, const):
+    if selected == 'carte':
+        return carte_layout
+
     dff = df[(df['AN'] >= annee_range[0]) & (df['AN'] <= annee_range[1])]
     if gravite: dff = dff[dff['GRAVITE'] == gravite]
     if meteo: dff = dff[dff['CD_COND_METEO'] == meteo]
@@ -154,9 +190,9 @@ def update_graph(selected, annee_range, gravite, meteo, surface, env, road, cons
     elif selected == 'environment':
         fig = px.histogram(dff, x='Environment_Label', title="Accidents by Environment")
     elif selected == 'defects':
-        fig = px.histogram(dff, x='CD_ASPCT_ROUTE', color='GRAVITE', barmode='group', title="Accidents by Road Defects")
+        fig = px.histogram(dff, x='CD_ASPCT_ROUTE', color='GRAVITE', barmode='group', title="Road Defects")
     elif selected == 'construction':
-        fig = px.histogram(dff, x='CD_ZON_TRAVX_ROUTR', color='GRAVITE', barmode='group', title="Construction Zone Accidents")
+        fig = px.histogram(dff, x='CD_ZON_TRAVX_ROUTR', color='GRAVITE', barmode='group', title="Construction Zones")
     elif selected == 'heatmap':
         fig = px.density_heatmap(dff[dff['GRAVITE'] == 'Grave'], x='CD_COND_METEO', y='CD_ETAT_SURFC',
                                  title="Severe Accidents Heatmap", color_continuous_scale='Reds')
@@ -168,8 +204,41 @@ def update_graph(selected, annee_range, gravite, meteo, surface, env, road, cons
                        y=df[df['GRAVITE'] == 'Grave'].groupby('AN').size().values,
                        mode='lines+markers', name='Graves', line=dict(color='red'))
         ])
-        fig.update_layout(title="COVID Impact on Accidents", xaxis_title="Year", yaxis_title="Number of Accidents")
+        fig.update_layout(title="Impact of COVID-19 on Accidents", xaxis_title="Year", yaxis_title="Number of Accidents")
     else:
         return html.P("Aucune option valide sélectionnée.")
 
     return dcc.Graph(figure=fig)
+
+# Callback carte interactive
+@callback(
+    Output('map-accidents', 'figure'),
+    Input('filter-annee', 'value')
+)
+def update_map(annee_range):
+    dff = df[(df['AN'] >= annee_range[0]) & (df['AN'] <= annee_range[1])]
+    region_counts = dff.groupby('Region').size().reset_index(name='Accidents')
+    region_counts['lat'] = region_counts['Region'].map(lambda x: region_coords.get(x, (None, None))[0])
+    region_counts['lon'] = region_counts['Region'].map(lambda x: region_coords.get(x, (None, None))[1])
+
+    fig = px.scatter_mapbox(
+        region_counts,
+        lat='lat', lon='lon',
+        size='Accidents',
+        hover_name='Region',
+        zoom=4,
+        color='Accidents',
+        color_continuous_scale='Viridis'
+    )
+    fig.update_layout(mapbox_style="carto-positron", margin={'r':0, 't':0, 'l':0, 'b':0})
+    return fig
+
+@callback(
+    Output('carte-selected-region', 'children'),
+    Input('map-accidents', 'clickData')
+)
+def region_selected(clickData):
+    if clickData:
+        region = clickData['points'][0]['hovertext']
+        return f"Région sélectionnée : {region}"
+    return "Aucune région sélectionnée"

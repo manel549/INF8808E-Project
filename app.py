@@ -11,6 +11,8 @@ sidebar = dbc.Nav(
         dbc.NavLink("Accueil", href="/", active="exact"),
         dbc.NavLink("Dashboard", href="/dashboard", active="exact"),
         dbc.NavLink("Carte", href="/map", active="exact"),
+        dbc.NavLink("Road Severity", href="/road_severity", active="exact"),
+
     ],
     vertical=True,
     pills=True,
@@ -34,6 +36,9 @@ def render_page_content(pathname):
         return home_layout
     elif pathname == "/dashboard":
         return pages.dashboard.layout
+    elif pathname == "/road_severity":
+        from pages.road_severity import layout as road_severity_layout
+        return road_severity_layout
 
     return dbc.Container([
         html.H1("404: Page non trouvée", className="text-danger"),
