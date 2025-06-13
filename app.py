@@ -10,8 +10,9 @@ sidebar = dbc.Nav(
     [
         dbc.NavLink("Accueil", href="/", active="exact"),
         dbc.NavLink("Dashboard", href="/dashboard", active="exact"),
-        dbc.NavLink("Carte", href="/map", active="exact"),
+        dbc.NavLink("Accident visualizations", href="/accident_visualizations", active="exact"),
         dbc.NavLink("Road Severity", href="/road_severity", active="exact"),
+        dbc.NavLink("BarPolar: Road Surface, Season, and Accident Severity", href="/polar_grave_surface", active="exact")
 
     ],
     vertical=True,
@@ -39,6 +40,12 @@ def render_page_content(pathname):
     elif pathname == "/road_severity":
         from pages.road_severity import layout as road_severity_layout
         return road_severity_layout
+    elif pathname == "/accident_visualizations":
+        from pages.accident_visualizations import layout as accident_visualizations_layout
+        return accident_visualizations_layout
+    elif pathname == "/polar_grave_surface":
+        from pages.polar_grave_surface import layout as polar_grave_surface_layout
+        return polar_grave_surface_layout
 
     return dbc.Container([
         html.H1("404: Page non trouvée", className="text-danger"),
