@@ -1,7 +1,7 @@
 from dash import Dash, dcc, html, Input, Output
 import dash_bootstrap_components as dbc
 import pages.dashboard
-
+import pages.polar_grave_surface
 
 app = Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
@@ -44,8 +44,7 @@ def render_page_content(pathname):
         from pages.accident_visualizations import layout as accident_visualizations_layout
         return accident_visualizations_layout
     elif pathname == "/polar_grave_surface":
-        from pages.polar_grave_surface import layout as polar_grave_surface_layout
-        return polar_grave_surface_layout
+        return pages.polar_grave_surface.layout
 
     return dbc.Container([
         html.H1("404: Page non trouvée", className="text-danger"),
