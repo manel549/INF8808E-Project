@@ -2,7 +2,7 @@ from dash import Dash, dcc, html, Input, Output
 import dash_bootstrap_components as dbc
 import pages.dashboard
 import pages.polar_grave_surface
-
+import pages.temporal_spatial
 app = Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 
@@ -12,7 +12,8 @@ sidebar = dbc.Nav(
         dbc.NavLink("Dashboard", href="/dashboard", active="exact"),
         dbc.NavLink("Accident visualizations", href="/accident_visualizations", active="exact"),
         dbc.NavLink("Road Severity", href="/road_severity", active="exact"),
-        dbc.NavLink("BarPolar: Road Surface, Season, and Accident Severity", href="/polar_grave_surface", active="exact")
+        dbc.NavLink("BarPolar: Road Surface, Season, and Accident Severity", href="/polar_grave_surface", active="exact"),
+        dbc.NavLink("Spatial and temporel", href="/temporal_spatial", active="exact")
 
     ],
     vertical=True,
@@ -44,13 +45,19 @@ def render_page_content(pathname):
         from pages.accident_visualizations import layout as accident_visualizations_layout
         return accident_visualizations_layout
     elif pathname == "/polar_grave_surface":
-        return pages.polar_grave_surface.layout
+        from pages.accident_visualizations import layout as polar_grave_surface_layout
+        return polar_grave_surface_layout
+    elif pathname == "/temporal_spatial":
+        pages.temporal_spatial.register_callbacks(app)
+        return pages.temporal_spatial.layout
 
     return dbc.Container([
         html.H1("404: Page non trouvée", className="text-danger"),
         html.Hr(),
         html.P(f"Désolé, la page {pathname} n'existe pas."),
     ])
+    
+pages.temporal_spatial.register_callbacks(app)
 
 if __name__ == "__main__":
     app.run_server(debug=True)
