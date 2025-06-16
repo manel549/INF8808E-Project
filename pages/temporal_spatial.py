@@ -1,6 +1,7 @@
 # spatial_temporel.py
-import dash_html_components as html
-import dash_core_components as dcc
+
+
+from dash import Dash, dcc, html, callback, Output, Input
 import pandas as pd
 from dash.dependencies import Input, Output
 from pages import map_chart

@@ -153,5 +153,20 @@ def create_sankey_chart(df):
 
 layout = html.Div([
     html.H2("Road Accident Severity"),
-    dcc.Graph(figure=create_sankey_chart(df))
-])
+  
+    html.P("This visualization answers the following target questions:"),
+    html.Ul([
+        html.Li("Are accidents more severe on certain types of roads?"),
+        html.Li("Are severe accidents more likely based on road configuration (e.g., curves, intersections)?"),
+    ]),
+
+    html.H3("Description"),
+    html.P("This Sankey diagram clearly represents the flow and distribution of accident severity "
+           "across two dimensions: Road Category (such as public road, off public road, other) and Road Configuration "
+           "(including one way, two way, separated by median, other). By visualizing these flows, "
+           "the diagram reveals how accidents are spread with respect to severity and road characteristics."),
+
+dcc.Graph(figure=create_sankey_chart(df))
+    
+], style={"width": "80%", "margin": "0 auto", "marginBottom": "40px", "lineHeight": "1.6"})
+

@@ -381,31 +381,68 @@ layout = html.Div([
     }),
 
     html.Div([
-        dcc.Tabs([
-            dcc.Tab(label='Accidents by User Type (Day/Night)', children=[
-                html.Div([
-                    html.H3("Comparison of User Type Involvement in Day vs Night", style={'textAlign': 'center'}),
-                    dcc.Graph(figure=accidents_by_user_type_day_night(df))
-                ], style={'padding': '30px'})
-            ]),
-            dcc.Tab(label='Severity by Month (Day/Night)', children=[
-                html.Div([
-                    html.H3("Monthly Severity Distribution: Day vs Night", style={'textAlign': 'center'}),
-                    dcc.Graph(figure=accident_severity_month(df))
-                ], style={'padding': '30px'})
-            ]),
-            dcc.Tab(label='Severe Accidents Heatmap', children=[
-                html.Div([
-                    html.H3("Severe Accidents by Region and Month", style={'textAlign': 'center'}),
-                    dcc.Graph(figure=generate_severe_accidents_heatmap(df))
-                ], style={'padding': '30px'})
-            ]),
-            dcc.Tab(label='Severity by Month / Week / Hour', children=[
-                html.Div([
-                    html.H3("Severity Breakdown: Monthly, Weekly, and Hourly Views", style={'textAlign': 'center'}),
-                    dcc.Graph(figure=generate_accident_severity_bar_chart(df))
-                ], style={'padding': '30px'})
-            ]),
-        ])
-    ], style={'width': '95%', 'margin': '0 auto'})
+    html.P("This dashboard provides clear, interactive insights into road accident patterns across Quebec. It helps answer key questions like:", style={'marginTop': '20px'}),
+    html.Ul([
+        html.Li("What types of road users are most frequently involved in road accidents?"),
+        html.Li("When and where do the most severe accidents occur?")
+    ]),
+     html.Details([
+            html.Summary("Click to expand full description", style={"cursor": "pointer"}),
+
+  html.H3("Accidents by Road User and Time of Day", style={'marginTop': '40px'}),
+    html.P("This bar chart breaks down accidents by user type, segmented into day (08:00–19:59) and night (20:00–07:59)."),
+    html.Ul([
+        html.Li("Light Vehicles (cars, small trucks)"),
+        html.Li("Heavy Vehicles (trucks, buses)"),
+        html.Li("Motorcycles"),
+        html.Li("Bicycles"),
+        html.Li("Pedestrians")
+    ]),
+    html.P("You can toggle between day and night stats. Hovering over the bars reveals exact accident counts."),
+
+    html.H4("Insights:", style={'marginTop': '20px'}),
+    html.P("Light vehicles consistently top the chart during both time frames. Pedestrian and bicycle accidents show noticeable variations between day and night.")
+],  open=False)], style={'padding': '30px', 'maxWidth': '900px', 'margin': 'auto'}),
+
+
+  html.Div([
+    dcc.Tabs([
+        dcc.Tab(label='Accidents by User Type (Day/Night)', children=[
+            html.Div([
+                html.H3("Comparison of User Type Involvement in Day vs Night", style={'textAlign': 'center'}),
+                dcc.Graph(figure=accidents_by_user_type_day_night(df))
+            ], style={'padding': '30px'})
+        ]),
+
+        dcc.Tab(label='Severity by Month (Day/Night)', children=[
+            html.Div([
+                html.H3("Monthly Severity Distribution: Day vs Night", style={'textAlign': 'center'}),
+                dcc.Graph(figure=accident_severity_month(df))
+            ], style={'padding': '30px'})
+        ]),
+
+        dcc.Tab(label='Severe Accidents Heatmap', children=[
+            html.Div([
+                html.H3("Severe Accidents by Region and Month", style={'textAlign': 'center'}),
+                dcc.Graph(figure=generate_severe_accidents_heatmap(df)),
+
+                html.H3(" Heatmap of Severe Accidents by Region and Month", style={'marginTop': '40px'}),
+                html.P("This interactive heatmap shows the monthly distribution of severe road accidents across Quebec’s administrative regions. "
+                       "Darker red cells indicate more severe accidents. The data is filtered to include only severe cases, and region names are standardized."),
+                html.P("When you hover over a cell, you’ll see the region, month, and exact number of accidents."),
+                html.P("For example: '142 severe accidents in Montérégie during July'. The layout is fully responsive."),
+
+                html.H4("Insights:", style={'marginTop': '20px'}),
+                html.P("Montérégie and Montréal are hotspots, especially from June to October. Winter months (January to March) show significantly lower accident counts.")
+            ], style={'padding': '30px'})
+        ]),
+
+        dcc.Tab(label='Severity by Month / Week / Hour', children=[
+            html.Div([
+                html.H3("Severity Breakdown: Monthly, Weekly, and Hourly Views", style={'textAlign': 'center'}),
+                dcc.Graph(figure=generate_accident_severity_bar_chart(df))
+            ], style={'padding': '30px'})
+        ]),
+    ])
+], style={'width': '95%', 'margin': '0 auto'})
 ])

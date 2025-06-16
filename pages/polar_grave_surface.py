@@ -23,17 +23,42 @@ lighting_colors = {1: "#FFD700", 2: "#FFA500", 3: "#1E90FF", 4: "#2F4F4F"}
 lighting_labels = {1: "Daylight and clear", 2: "Daylight and twilight",
                    3: "Night and lit road", 4: "Night and unlit road"}
 seasons = sorted(df['SEASON'].dropna().unique().tolist())
-
 layout = html.Div([
-    html.H2("Severe accidents by surface type and season (Barpolar)", style={'textAlign': 'center'}),
+    html.H2("Seasonal Radar Visualization", className="text-center", style={"marginTop": "40px"}),
+
+    html.P("This radar chart visualization explores how road surface and lighting conditions influence the severity of road accidents across different seasons."),
+
+    html.Details([
+        html.Summary("Click to expand full description", style={"cursor": "pointer"}),
+
+        html.Div([
+            html.H3("Target Questions"),
+            html.Ul([
+                html.Li("How do weather and road conditions influence the severity of accidents?"),
+                html.Li("Are certain environmental conditions associated with higher accident rates?"),
+                html.Li("Are accidents more severe on certain types of roads?"),
+                html.Li("Are there specific months, days of the week, or times of day when accidents are more frequent or severe?")
+            ]),
+
+            html.H3("Insights"),
+            html.P("Summer and spring show most serious accidents on dry roads, especially in daylight — likely due to high traffic and speed. Winter has a more even distribution across icy, snowy, and wet surfaces, reflecting harsher driving conditions. Night and unlit roads significantly raise accident severity, particularly in autumn and winter."),
+        ], style={"padding": "10px", "lineHeight": "1.6"})
+    ], open=False),
+
     dcc.Dropdown(
         id='season-dropdown',
         options=[{'label': s, 'value': s} for s in seasons],
         value=seasons[0],
         style={'width': '50%', 'margin': '0 auto'}
     ),
+
     html.Div(id='polar-graph-container')
-])
+
+], style={"width": "80%", "margin": "0 auto", "marginBottom": "40px"})
+
+
+
+
 
 @callback(
     Output('polar-graph-container', 'children'),

@@ -70,58 +70,79 @@ gravite_options = [{'label': g, 'value': g} for g in df['GRAVITE'].unique()]
 layout = html.Div([
     html.H1("Road Accident Dashboard – Quebec", className='text-center pb-3'),
 
-    dbc.Row([
-    dbc.Col([
-        html.Div([
-            dcc.Dropdown(
-                id='dashboard-dropdown',
-                options=[
-                    {'label': '1. Weather', 'value': 'weather'},
-                    {'label': '2. Road Surface', 'value': 'surface'},
-                    {'label': '3. Lighting', 'value': 'lighting'},
-                    {'label': '4. Environment', 'value': 'environment'},
-                    {'label': '5. Road Defects', 'value': 'defects'},
-                    {'label': '6. Construction Zones', 'value': 'construction'},
-                    {'label': '7. Weather vs Surface Heatmap', 'value': 'heatmap'},
-                    {'label': '8. Before / After COVID-19', 'value': 'covid'}
-                ],
-                value='weather'
-            )
-        ], style={'width': '20%', 'margin': '0 auto',  'marginBottom': '30px'})  # ← largeur + centrage
-    ], width=12)
-]),
+    html.Div([
+   
 
+        html.P("This interactive dashboard is designed to explore how environmental and contextual factors influence the severity and frequency of road accidents in Quebec."),
 
-    dbc.Row([
-        dbc.Col([
-            dcc.Dropdown(id='filter-gravite', options=gravite_options, placeholder="Gravité"),
-        ], width=2),
-        dbc.Col([
-            dcc.Dropdown(id='filter-meteo', placeholder="Météo"),
-        ], width=2),
-        dbc.Col([
-            dcc.Dropdown(id='filter-surface', placeholder="Surface"),
-        ], width=2),
-        dbc.Col([
-            dcc.Dropdown(id='filter-env', placeholder="Environnement"),
-        ], width=2),
-        dbc.Col([
-            dcc.Dropdown(id='filter-road', placeholder="Road Defect"),
-        ], width=2),
-        dbc.Col([
-            dcc.Dropdown(id='filter-const', placeholder="Construction Zone"),
-        ], width=2),
-    ], className='mb-4'),
+        html.P("Using categorical variables such as weather conditions, road surface state, lighting, construction zones, and the impact of the COVID-19 pandemic, the dashboard offers dynamic visualizations to uncover meaningful patterns."),
 
+        html.P("Each chart answers a targeted analytical question, helping to identify high-risk scenarios and support data-driven strategies for public safety and accident prevention."),
+
+        html.H3("Questions Explored:"),
+        html.Details([
+            html.Summary("Click to expand full description", style={"cursor": "pointer"}),
+        html.Ul([
+            html.Li("How do weather and road conditions influence the severity of accidents?"),
+            html.Li("Are certain environmental conditions associated with higher accident rates?"),
+            html.Li("Do weather conditions affect accident severity?"),
+            html.Li("Do road surface conditions (snow, wet, dry) influence severity?"),
+            html.Li("Does lighting condition (day/night, lit or unlit) affect accident severity?"),
+            html.Li("Are certain types of road defects more strongly associated with severe accidents?"),
+            html.Li("Do more severe accidents occur in construction zones?"),
+            html.Li("How did the COVID-19 pandemic affect road accident patterns?"),
+        ]),
+
+        html.H3("Insights:"),
+        html.P("Clear weather has the most accidents, but fog, rain, and snow are linked to more severe ones."),
+        html.P("Dry roads dominate by number, but icy/snow-covered roads show higher severity."),
+        html.P("Lighting at night without public lights increases accident severity."),
+        html.P("Rural areas have a higher share of serious accidents despite fewer total accidents."),
+        html.P("Cracks and road defects are associated with serious incidents."),
+        html.P("Construction zones show both high frequency and high severity."),
+        html.P("Combined risk factors (e.g., icy roads during fog) are highlighted through heatmaps."),
+    ], open=False)
+    ], style={'width': '80%', 'margin': '0 auto', 'marginBottom': '30px'}),
+    # Dropdown principal (visualisation)
     dbc.Row([
         dbc.Col([
-            html.Div(id='main-graph')
-        ], width=8),
-        dbc.Col([
-            html.Div(id='map-container')
-        ], width=4),
+            html.Div([
+                dcc.Dropdown(
+                    id='dashboard-dropdown',
+                    options=[
+                        {'label': '1. Weather', 'value': 'weather'},
+                        {'label': '2. Road Surface', 'value': 'surface'},
+                        {'label': '3. Lighting', 'value': 'lighting'},
+                        {'label': '4. Environment', 'value': 'environment'},
+                        {'label': '5. Road Defects', 'value': 'defects'},
+                        {'label': '6. Construction Zones', 'value': 'construction'},
+                        {'label': '7. Weather vs Surface Heatmap', 'value': 'heatmap'},
+                        {'label': '8. Before / After COVID-19', 'value': 'covid'},
+                    ],
+                    value='weather',
+                    placeholder="Select a dashboard section"
+                )
+            ], style={'width': '40%', 'margin': '0 auto', 'marginBottom': '30px'})
+        ])
     ]),
 
+    # Filtres secondaires
+    dbc.Row([
+        dbc.Col([dcc.Dropdown(id='filter-gravite', options=gravite_options, placeholder="Severity")], width=2),
+        dbc.Col([dcc.Dropdown(id='filter-meteo', placeholder="Weather")], width=2),
+        dbc.Col([dcc.Dropdown(id='filter-surface', placeholder="Road Surface")], width=2),
+        dbc.Col([dcc.Dropdown(id='filter-env', placeholder="Environnement")], width=2),
+        dbc.Col([dcc.Dropdown(id='filter-road', placeholder="Road Defect")], width=2),
+        dbc.Col([dcc.Dropdown(id='filter-const', placeholder="Construction Zone")], width=2),
+    ], className='mb-4'),
+
+    # Section graphique + carte
+    dbc.Row([
+        dbc.Col([html.Div(id='main-graph')], width=8),
+        dbc.Col([html.Div(id='map-container')], width=4),
+    ]),
+
+    # Slider année
     dbc.Row([
         dbc.Col([
             html.Label("Filter by year"),
@@ -137,8 +158,6 @@ layout = html.Div([
         ], width=12, className='mt-5')
     ])
 ], className='container-fluid')
-
-
 
 @callback(
     Output('filter-gravite', 'disabled'),
