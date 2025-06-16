@@ -3,14 +3,9 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
+from data import df 
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-
-
-# Chargement des données
-df = pd.read_csv('assets/data_fusionnee.csv')
-df.columns = df.columns.str.strip().str.replace('"', '')
-df = df.rename(columns=lambda x: x.strip())
 
 # Préparation des colonnes
 df['GRAVITE'] = df['GRAVITE'].replace({

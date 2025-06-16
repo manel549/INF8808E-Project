@@ -1,8 +1,8 @@
 from dash import html, dcc, callback, Output, Input
 import pandas as pd
+from data import df 
 
 # Chargement et préparation des données
-df = pd.read_csv('assets/data_fusionnee.csv')
 df['MS_ACCDN'] = df['MS_ACCDN'].astype(int)
 df['Gravité'] = df['GRAVITE'].apply(lambda x: 'Grave' if x == 'Mortel ou grave' else 'Autre')
 

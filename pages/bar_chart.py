@@ -23,7 +23,7 @@ def get_counts_by_type_and_time(df, time_col='AN', type_col='GRAVITE'):
     Returns:
         pd.DataFrame: Tableau avec colonnes [temps, type_accident, count]
     '''
-    df = pd.read_csv('./assets/data_fusionnee.csv')
+
 
     # Traduire les types d'accidents
     df[type_col] = df[type_col].map(GRAVITE_TRANSLATION)

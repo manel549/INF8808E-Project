@@ -1,8 +1,8 @@
 from dash import Dash, dcc, html, callback, Output, Input
 import plotly.graph_objects as go
-import pandas as pd
+from data import df 
 
-df = pd.read_csv('assets/data_fusionnee.csv')
+
 df['MS_ACCDN'] = df['MS_ACCDN'].astype(int)
 
 def month_to_season(month):

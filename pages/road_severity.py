@@ -2,14 +2,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.io as pio
 from dash import html, dcc
+from data import df 
 pio.renderers.default = 'browser'
-
-
-
-
-# Load and clean data
-df = pd.read_csv('assets/data_fusionnee.csv')
-df.columns = df.columns.str.strip().str.replace('"', '').str.replace('\t', '')
 
 
 # Aggregate data
