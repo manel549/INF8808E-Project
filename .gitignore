@@ -12,3 +12,6 @@ __pycache__/
 # Dossiers liés à l'IDE
 .vscode/
 .idea/
+
+# Ignore specific script
+pages/map_chart.py
