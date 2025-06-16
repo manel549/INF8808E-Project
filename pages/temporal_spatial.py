@@ -8,7 +8,9 @@ from pages import map_chart
 from pages import bar_chart
 from pages import bar_chart_region
 from pages.template import create_template
-from data import df 
+
+def prep_data():
+    return pd.read_csv('./assets/data_fusionnee.csv')
 
 def clean_region_names(df):
     df['region'] = df['region'].str.replace(r'\s*\(\d+\)', '', regex=True).str.upper()
@@ -125,7 +127,7 @@ def init_app_layout(fig_bar, fig_map):
     ])
 
 create_template()
-df_bar = df
+df_bar = prep_data()
 fig_bar = bar_chart.init_figure()
 fig_bar = bar_chart.draw(fig_bar, df_bar, mode='count', type_col='GRAVITE', granularity='year')
 
