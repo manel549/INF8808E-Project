@@ -3,6 +3,7 @@ import dash_bootstrap_components as dbc
 import pages.dashboard
 import pages.polar_grave_surface
 import pages.temporal_spatial
+from data import df 
 app = Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 

@@ -1,6 +1,6 @@
 import pandas as pd
 import plotly.graph_objects as go
-from data import df 
+#from data import df 
 
 # Function to create Bar chart for Accidents by User Type (Day vs Night)
 def accidents_by_user_type_day_night(df):
@@ -366,7 +366,10 @@ def generate_accident_severity_bar_chart(df):
 
 from dash import html, dcc, Output, Input
 
-
+# Charger les données
+df = pd.read_csv("assets/data_fusionnee.csv")
+df.columns = df.columns.str.strip().str.replace('"', '')
+df = df.rename(columns=lambda x: x.strip())
 
 
 # -- Layout principal de la page --
