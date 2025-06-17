@@ -3,7 +3,9 @@ import plotly.graph_objects as go
 import pandas as pd
 
 
-df = pd.read_csv('assets/data_fusionnee.csv')
+from data import get_dataframe
+
+df = get_dataframe("data") 
 df['MS_ACCDN'] = df['MS_ACCDN'].astype(int)
 
 def month_to_season(month):

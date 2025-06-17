@@ -3,7 +3,19 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
-from data import df 
+#from data import df 
+
+from sqlalchemy import create_engine
+
+from sqlalchemy import create_engine
+import pandas as pd
+from sqlalchemy.exc import OperationalError
+
+from data import get_dataframe
+
+df = get_dataframe("data") 
+
+
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 

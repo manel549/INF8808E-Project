@@ -2,10 +2,13 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.io as pio
 from dash import html, dcc
-from data import df 
+
 pio.renderers.default = 'browser'
 
 
+from data import get_dataframe
+
+df = get_dataframe("data") 
 # Aggregate data
 route_severity = df.groupby(['CD_CATEG_ROUTE', 'GRAVITE']).size().reset_index(name='Count')
 config_severity = df.groupby(['CD_CONFG_ROUTE', 'GRAVITE']).size().reset_index(name='Count')
@@ -163,4 +166,3 @@ layout = html.Div([
 dcc.Graph(figure=create_sankey_chart(df))
     
 ], style={"width": "80%", "margin": "0 auto", "marginBottom": "40px", "lineHeight": "1.6"})
-

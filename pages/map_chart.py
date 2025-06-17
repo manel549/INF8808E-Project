@@ -1,5 +1,7 @@
 import pandas as pd
 import plotly.express as px
+from data import get_dataframe
+
 
 REGION_COORDS = {
     "Bas-Saint-Laurent (01)": (48.5, -68.5),
@@ -22,77 +24,38 @@ REGION_COORDS = {
 }
 
 
-def prepare_region_data(filepath='./assets/data_fusionnee.csv'):
+def prepare_region_data():
     '''
-    Prépare les données agrégées par région pour la carte.
-
-    Args:
-        filepath (str): chemin vers le fichier CSV
+    Prépare les données agrégées par région pour la carte à partir de la base Supabase.
 
     Returns:
         pd.DataFrame: données prêtes avec lat/lon/nb_accidents
     '''
-    df = pd.read_csv(filepath)
+    df = get_dataframe("data")
+    if df is None or df.empty:
+        print("Aucune donnée disponible depuis Supabase.")
+        return pd.DataFrame(columns=['region', 'nb_accidents', 'latitude', 'longitude'])
 
-    # Nettoyage des noms de colonnes
+    # Nettoyage des colonnes si nécessaire
     df.columns = df.columns.str.strip().str.replace('"', '').str.replace("'", '').str.replace('\t', '')
 
-    # Vérifier et renommer si nécessaire
+    # Identifier la bonne colonne
     if 'REG_ADM' not in df.columns:
         for col in df.columns:
             if 'REG_ADM' in col:
                 df.rename(columns={col: 'REG_ADM'}, inplace=True)
                 break
 
-    # Extraire le nom de région
     df['region'] = df['REG_ADM']
 
-    # Compter le nombre d'accidents par région
     df_counts = df['region'].value_counts().reset_index()
     df_counts.columns = ['region', 'nb_accidents']
 
-    # Ajouter les coordonnées
+    # Ajouter les coordonnées depuis le dictionnaire
     df_counts['latitude'] = df_counts['region'].map(lambda r: REGION_COORDS.get(r, (None, None))[0])
     df_counts['longitude'] = df_counts['region'].map(lambda r: REGION_COORDS.get(r, (None, None))[1])
+
     return df_counts
-# def draw_geo_map(df_counts, center_lat=47.5, center_lon=-71.5, zoom=4.5):
-#     # Nettoyer les noms de région pour la légende
-#     df_counts['clean_region'] = df_counts['region'].str.replace(r'\s*\(\d+\)', '', regex=True)
-
-#     # Définir le texte de survol en anglais
-#     df_counts['hover_text'] = df_counts.apply(
-#         lambda row: f"<b>{row['clean_region']}</b><br>Number of accidents: {row['nb_accidents']:,}", axis=1
-#     )
-
-#     fig = px.scatter_geo(
-#         df_counts,
-#         lat='latitude',
-#         lon='longitude',
-#         size='nb_accidents',
-#         color='clean_region',
-#         hover_name='clean_region',
-#         custom_data=['hover_text', 'region'],  # pour le survol et les callbacks
-#         projection='natural earth',
-#         title='Click on a region on the map to explore accident trends over time in the panel on the right'
-#     )
-
-#     # Personnaliser le contenu du survol
-#     fig.update_traces(
-#         hovertemplate='%{customdata[0]}<extra></extra>'
-#     )
-
-#     fig.update_layout(
-#         geo=dict(
-#             scope='north america',
-#             showland=True,
-#             landcolor='lightgray',
-#             center=dict(lat=center_lat, lon=center_lon),
-#             projection_scale=zoom
-#         ),
-#         legend_title='Region'
-#     )
-
-#     return fig
 
 import plotly.express as px
 import plotly.graph_objects as go

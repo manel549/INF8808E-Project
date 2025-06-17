@@ -9,8 +9,12 @@ from pages import bar_chart
 from pages import bar_chart_region
 from pages.template import create_template
 
+from data import get_dataframe
+
+
 def prep_data():
-    return pd.read_csv('./assets/data_fusionnee.csv')
+    df = get_dataframe("data")
+
 
 def clean_region_names(df):
     df['region'] = df['region'].str.replace(r'\s*\(\d+\)', '', regex=True).str.upper()
@@ -127,7 +131,7 @@ def init_app_layout(fig_bar, fig_map):
     ])
 
 create_template()
-df_bar = prep_data()
+df_bar = get_dataframe("data")
 fig_bar = bar_chart.init_figure()
 fig_bar = bar_chart.draw(fig_bar, df_bar, mode='count', type_col='GRAVITE', granularity='year')
 
@@ -159,7 +163,9 @@ def register_callbacks(app):
     )
     def update_region_bar_chart(region_clicked, granularity):
         if region_clicked:
-            df = prep_data()
+            df = get_dataframe("data")
+            if df is None or df.empty:
+                return bar_chart.init_figure("Aucune donnée")
             df['JR_SEMN_ACCDN'] = df['JR_SEMN_ACCDN'].replace({'SEM': 'Weekday', 'FDS': 'Weekend'})
             fig = bar_chart_region.init_figure(f"Accidents in {region_clicked}")
             fig = bar_chart_region.draw(fig, df, mode='count', type_col='GRAVITE', region=region_clicked, granularity=granularity)
@@ -171,7 +177,9 @@ def register_callbacks(app):
         Input('granularity-selector', 'value')
     )
     def update_bar_chart(granularity):
-        df = prep_data()
+        df = get_dataframe("data")
+        if df is None or df.empty:
+                return bar_chart.init_figure("Aucune donnée")
         df['JR_SEMN_ACCDN'] = df['JR_SEMN_ACCDN'].replace({'SEM': 'Weekday', 'FDS': 'Weekend'})
         fig = bar_chart.init_figure(f"Accidents by {granularity.capitalize()}")
         fig = bar_chart.draw(fig, df, mode='count', type_col='GRAVITE', granularity=granularity)

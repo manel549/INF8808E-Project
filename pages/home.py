@@ -1,6 +1,8 @@
 from dash import html, dcc, callback, Output, Input
 import pandas as pd
-from data import df 
+from data import get_dataframe
+
+df = get_dataframe("data") 
 
 # Chargement et préparation des données
 df['MS_ACCDN'] = df['MS_ACCDN'].astype(int)

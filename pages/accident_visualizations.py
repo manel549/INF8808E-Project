@@ -367,7 +367,10 @@ def generate_accident_severity_bar_chart(df):
 from dash import html, dcc, Output, Input
 
 # Charger les données
-df = pd.read_csv("assets/data_fusionnee.csv")
+
+from data import get_dataframe
+
+df = get_dataframe("data") 
 df.columns = df.columns.str.strip().str.replace('"', '')
 df = df.rename(columns=lambda x: x.strip())
 
