@@ -13,7 +13,7 @@ from data import get_dataframe
 
 
 def prep_data():
-    df = get_dataframe("data")
+    get_dataframe("data")
 
 
 def clean_region_names(df):
@@ -179,7 +179,7 @@ def register_callbacks(app):
     def update_bar_chart(granularity):
         df = get_dataframe("data")
         if df is None or df.empty:
-                return bar_chart.init_figure("Aucune donnée")
+            return bar_chart.init_figure("Aucune donnée")
         df['JR_SEMN_ACCDN'] = df['JR_SEMN_ACCDN'].replace({'SEM': 'Weekday', 'FDS': 'Weekend'})
         fig = bar_chart.init_figure(f"Accidents by {granularity.capitalize()}")
         fig = bar_chart.draw(fig, df, mode='count', type_col='GRAVITE', granularity=granularity)

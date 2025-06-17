@@ -6,9 +6,14 @@ import pages.temporal_spatial
 app = Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 import dash_bootstrap_components as dbc
-
-
 import plotly.io as pio
+
+
+
+
+import psutil, os
+process = psutil.Process(os.getpid())
+print(f"[DEBUG] RAM utilisée : {process.memory_info().rss / 1024**2:.2f} Mo")
 
 # Définir le thème global, par exemple 'plotly_dark' ou 'ggplot2'
 pio.templates.default = "seaborn"

@@ -3,6 +3,9 @@ import plotly.express as px
 from data import get_dataframe
 
 
+
+
+
 REGION_COORDS = {
     "Bas-Saint-Laurent (01)": (48.5, -68.5),
     "Saguenay―Lac-Saint-Jean (02)": (48.3, -71.1),
