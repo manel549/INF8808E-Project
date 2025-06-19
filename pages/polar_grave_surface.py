@@ -89,7 +89,7 @@ def update_polar_chart(season):
             hoverinfo='text', hovertext=hover_texts
         ))
     fig.update_layout(
-        title=f"Polar Bar Chart – Number of Severe Accidents ({season})",
+        title=f"Number of Severe Accidents ({season})",
         polar=dict(
             radialaxis=dict(visible=True, range=[0, max_val * 1.05]),
             angularaxis=dict(tickvals=theta, ticktext=surface_state_labels, rotation=90, direction="clockwise")

@@ -110,7 +110,7 @@ def draw(fig, data, mode, type_col='GRAVITE', granularity='year'):
 
     fig.update_layout(
         barmode='stack',
-        xaxis_title='Time',
+        xaxis_title='',
         yaxis_title='Accident Frequency' if mode == 'count' else 'Accidents (%)',
         legend_title='Accident Type'
     )

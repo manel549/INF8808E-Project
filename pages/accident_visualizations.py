@@ -151,7 +151,7 @@ def accident_severity_month(df):
 
     fig.update_layout(
         title="Monthly Accident Severity (Daytime)",
-        xaxis_title="Month",
+        xaxis_title="",
         yaxis_title="Number of Accidents",
         barmode='stack',
         updatemenus=[dict(
@@ -220,7 +220,7 @@ def generate_severe_accidents_heatmap(df):
 
     fig.update_layout(
         title="Severe Accidents by Region and Month (Hover for Details)",
-        xaxis_title="Month",
+        xaxis_title="",
         yaxis_title="Administrative Region",
         width=1200,   
         height=800   
@@ -261,9 +261,9 @@ def generate_accident_severity_bar_chart(df):
                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     weektype_order = ['Weekday', 'Weekend']
     hour_order = [
-        '00:00:00-03:59:00', '04:00:00-07:59:00',
-        '08:00:00-11:59:00', '12:00:00-15:59:00',
-        '16:00:00-19:59:00', '20:00:00-23:59:00'
+        '00:00-03:59', '04:00-07:59',
+        '08:00-11:59', '12:00-15:59',
+        '16:00-19:59', '20:00-23:59'
     ]
 
     # Fonction de regroupement
@@ -344,7 +344,7 @@ def generate_accident_severity_bar_chart(df):
     # Mise en page
     fig.update_layout(
         title="Accident Severity by Month",
-        xaxis_title="Time Category",
+        xaxis_title="",
         yaxis_title="Number of Accidents",
         barmode='stack',
         updatemenus=[dict(
@@ -411,14 +411,14 @@ layout = html.Div([
 
   html.Div([
     dcc.Tabs([
-        dcc.Tab(label='Accidents by User Type (Day/Night)', children=[
+        dcc.Tab(label='Accidents by User Type', children=[
             html.Div([
                 html.H3("Comparison of User Type Involvement in Day vs Night", style={'textAlign': 'center'}),
                 dcc.Graph(figure=accidents_by_user_type_day_night(df))
             ], style={'padding': '30px'})
         ]),
 
-        dcc.Tab(label='Severity by Month (Day/Night)', children=[
+        dcc.Tab(label='Severity by Month', children=[
             html.Div([
                 html.H3("Monthly Severity Distribution: Day vs Night", style={'textAlign': 'center'}),
                 dcc.Graph(figure=accident_severity_month(df))
@@ -441,7 +441,7 @@ layout = html.Div([
             ], style={'padding': '30px'})
         ]),
 
-        dcc.Tab(label='Severity by Month / Week / Hour', children=[
+        dcc.Tab(label='Severity over time', children=[
             html.Div([
                 html.H3("Severity Breakdown: Monthly, Weekly, and Hourly Views", style={'textAlign': 'center'}),
                 dcc.Graph(figure=generate_accident_severity_bar_chart(df))
