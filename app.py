@@ -76,8 +76,9 @@ def render_page_content(pathname):
         from pages.polar_grave_surface import layout as polar_grave_surface_layout
         return polar_grave_surface_layout
     elif pathname == "/temporal_spatial":
-        pages.temporal_spatial.register_callbacks(app)
-        return pages.temporal_spatial.layout
+        from pages.temporal_spatial import layout as temporal_spatial_layout
+        #pages.temporal_spatial.register_callbacks(app)
+        return temporal_spatial_layout
 
     return dbc.Container([
         html.H1("404: Page non trouvée", className="text-danger"),
@@ -85,7 +86,7 @@ def render_page_content(pathname):
         html.P(f"Désolé, la page {pathname} n'existe pas."),
     ])
     
-pages.temporal_spatial.register_callbacks(app)
+#pages.temporal_spatial.register_callbacks(app)
 
 server = app.server 
 if __name__ == "__main__":

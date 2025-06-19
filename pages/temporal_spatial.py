@@ -144,24 +144,22 @@ layout = html.Div([
     init_app_layout(fig_bar, fig_map)
 ])
 
-def register_callbacks(app):
-
-    @app.callback(
+@callback(
         Output('selected-region', 'data'),
         Input('accident-map', 'clickData')
     )
-    def store_clicked_region(clickData):
+def store_clicked_region(clickData):
         print("ClickData received:", clickData)
         if clickData:
             return clickData['points'][0]['customdata'][0]
         return None
 
-    @app.callback(
+@callback(
         Output('region-info', 'children'),
         Input('selected-region', 'data'),
         Input('granularity-region-selector', 'value')
     )
-    def update_region_bar_chart(region_clicked, granularity):
+def update_region_bar_chart(region_clicked, granularity):
         if region_clicked:
             df = get_dataframe("data")
             if df is None or df.empty:
@@ -172,11 +170,11 @@ def register_callbacks(app):
             return dcc.Graph(figure=fig, style={'width': '100%', 'height': '500px'})
         return html.P("", style={'fontSize': '14px'})
 
-    @app.callback(
+@callback(
         Output('bar-chart', 'figure'),
         Input('granularity-selector', 'value')
     )
-    def update_bar_chart(granularity):
+def update_bar_chart(granularity):
         df = get_dataframe("data")
         if df is None or df.empty:
             return bar_chart.init_figure("Aucune donnée")
