@@ -43,7 +43,7 @@ def init_figure(title='Accident frequency in Quebec'):
     )
     return fig
 
-def draw(fig, data, mode, type_col='GRAVITE', granularity='year', region=None):
+def draw(fig, data, mode, type_col='GRAVITE', granularity='AN', region=None):
     COLOR_PALETTE = {
         'Fatal or Serious': "#8B0000",    # Dark Red (intense, grave)
         'Minor': "#CD5C5C",               # Indian Red (modéré)

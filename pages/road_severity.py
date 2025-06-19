@@ -8,8 +8,14 @@ pio.renderers.default = 'browser'
 
 from data import get_dataframe
 
-df = get_dataframe("data") 
+
 # Aggregate data
+
+COLUMNS = "CD_CATEG_ROUTE, CD_CONFG_ROUTE, GRAVITE"
+df = get_dataframe("data", cols=COLUMNS)
+df.columns = df.columns.str.strip().str.replace('"', '')
+df = df.rename(columns=lambda x: x.strip())
+
 route_severity = df.groupby(['CD_CATEG_ROUTE', 'GRAVITE']).size().reset_index(name='Count')
 config_severity = df.groupby(['CD_CONFG_ROUTE', 'GRAVITE']).size().reset_index(name='Count')
 

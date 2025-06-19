@@ -1,6 +1,11 @@
 import pandas as pd
 import plotly.graph_objects as go
-#from data import df 
+from dash import html, dcc, Output, Input
+from data import get_dataframe
+import pandas as pd
+import plotly.graph_objects as go
+
+pd.set_option('future.no_silent_downcasting', True)
 
 # Function to create Bar chart for Accidents by User Type (Day vs Night)
 def accidents_by_user_type_day_night(df):
@@ -12,7 +17,13 @@ def accidents_by_user_type_day_night(df):
         'IND_PIETON': 'Pedestrians'
     }
 
-    df[list(usager_cols.keys())] = df[list(usager_cols.keys())].replace({'O': 1, 'N': 0})
+    df[list(usager_cols.keys())] = (
+        df[list(usager_cols.keys())]
+        .replace({'O': 1, 'N': 0})
+        .infer_objects(copy=False) 
+    )
+
+
 
     # Define Day/Night based on HR_ACCDN
     def classify_period(hr):
@@ -165,8 +176,7 @@ def accident_severity_month(df):
     )
     return fig
 
-import pandas as pd
-import plotly.graph_objects as go
+
 
 # Function to generate a heatmap of severe accidents by region and month
 def generate_severe_accidents_heatmap(df):
@@ -228,8 +238,7 @@ def generate_severe_accidents_heatmap(df):
 
     return fig
 
-import pandas as pd
-import plotly.graph_objects as go
+
 
 # Function to generate a bar chart for accident severity by month, week type, and hour range
 def generate_accident_severity_bar_chart(df):
@@ -363,14 +372,11 @@ def generate_accident_severity_bar_chart(df):
 
     return fig
 
-
-from dash import html, dcc, Output, Input
-
-# Charger les données
-
-from data import get_dataframe
-
 df = get_dataframe("data") 
+
+
+COLUMNS = "IND_AUTO_CAMION_LEGER, IND_VEH_LOURD, IND_MOTO_CYCLO, IND_VELO, IND_PIETON, HR_ACCDN, MS_ACCDN, JR_SEMN_ACCDN, GRAVITE"
+df_global = get_dataframe("data", cols=COLUMNS)
 df.columns = df.columns.str.strip().str.replace('"', '')
 df = df.rename(columns=lambda x: x.strip())
 

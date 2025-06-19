@@ -2,11 +2,14 @@ from dash import Dash, dcc, html, callback, Output, Input
 import plotly.graph_objects as go
 import pandas as pd
 
-
 from data import get_dataframe
 
-df = get_dataframe("data") 
+COLUMNS = "CD_ECLRM, MS_ACCDN, GRAVITE, CD_ETAT_SURFC "
+df= get_dataframe("data", cols=COLUMNS)
+
+
 df['MS_ACCDN'] = df['MS_ACCDN'].astype(int)
+
 
 def month_to_season(month):
     if month in [1, 2, 3]: return 'Winter'

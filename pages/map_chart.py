@@ -27,14 +27,14 @@ REGION_COORDS = {
 }
 
 
-def prepare_region_data():
+def prepare_region_data(df):
     '''
     Prépare les données agrégées par région pour la carte à partir de la base Supabase.
 
     Returns:
         pd.DataFrame: données prêtes avec lat/lon/nb_accidents
     '''
-    df = get_dataframe("data")
+
     if df is None or df.empty:
         print("Aucune donnée disponible depuis Supabase.")
         return pd.DataFrame(columns=['region', 'nb_accidents', 'latitude', 'longitude'])
