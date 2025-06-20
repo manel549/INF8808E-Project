@@ -1,10 +1,8 @@
 import pandas as pd
 import plotly.express as px
-from data import get_dataframe
-
-
-
-
+import plotly.express as px
+import plotly.graph_objects as go
+import plotly.express as px
 
 REGION_COORDS = {
     "Bas-Saint-Laurent (01)": (48.5, -68.5),
@@ -60,11 +58,9 @@ def prepare_region_data(df):
 
     return df_counts
 
-import plotly.express as px
-import plotly.graph_objects as go
 
 def draw_geo_map(df_counts, center_lat=47.5, center_lon=-71.5, zoom=4.5):
-    fig = px.scatter_geo(
+    fig = px.scatter_mapbox(
         df_counts,
         lat='latitude',
         lon='longitude',
@@ -72,14 +68,18 @@ def draw_geo_map(df_counts, center_lat=47.5, center_lon=-71.5, zoom=4.5):
         color='region',
         hover_name='region',
         hover_data={'nb_accidents': True, 'latitude': False, 'longitude': False},
-        projection='natural earth',
         title='Click on a region on the map to explore accident trends over time in the panel on the right',
         custom_data=['region']
     )
 
     fig.update_layout(
+        mapbox_style="open-street-map",  
+        mapbox=dict(
+            center=dict(lat=center_lat, lon=center_lon),
+            zoom=zoom
+        ),
         legend_title=dict(text='Region'),
-        template='plotly_white',  # Assure l'application du style
+        template='plotly_white',
         font=dict(
             family='Open Sans, sans-serif',
             size=14,
@@ -96,13 +96,6 @@ def draw_geo_map(df_counts, center_lat=47.5, center_lon=-71.5, zoom=4.5):
                 size=12,
                 color='#333333'
             )
-        ),
-        geo=dict(
-            scope='north america',
-            showland=True,
-            landcolor='lightgray',
-            center=dict(lat=center_lat, lon=center_lon),
-            projection_scale=zoom
         )
     )
 

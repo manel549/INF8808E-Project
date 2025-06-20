@@ -54,20 +54,22 @@ def init_app_layout(fig_bar, fig_map):
             'flexWrap': 'wrap'
         }, children=[
 
-            html.Div(style={'flex': '1', 'minWidth': '500px', 'paddingRight': '20px'}, children=[
-                html.H2("Accidents by region", style={'fontSize': '20px', 'fontWeight': '600'}),
+            html.Div(style={'flex': '1', 'minWidth': '400px'}, children=[
+
+                html.H2("Accidents by Region", style={'fontSize': '20px', 'fontWeight': '600'}),
                 dcc.Graph(
                     figure=fig_map,
                     id='accident-map',
                     config={
                         'scrollZoom': True,
-                        'displayModeBar': False
+                        'displayModeBar': True
                     },
                     style={'height': '600px'}
                 )
             ]),
 
-            html.Div(style={'flex': '1', 'minWidth': '350px'}, children=[
+            html.Div(style={'flex': '1', 'minWidth': '400px'}, children=[
+
                 html.Div(style={'display': 'flex', 'alignItems': 'center', 'gap': '10px', 'marginBottom': '20px'}, children=[
                     html.Label("Select time granularity:", style={'fontWeight': '600'}),
                     dcc.Dropdown(
