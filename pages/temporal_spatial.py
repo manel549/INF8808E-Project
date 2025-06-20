@@ -25,7 +25,7 @@ def init_app_layout(fig_bar, fig_map):
         'boxSizing': 'border-box'
     }, children=[
 
-        html.H1('Spatio-Temporal Analysis: Quebec Road Safety', style={
+        html.H1('Spatio-temporal analysis', style={
             'marginBottom': '10px',
             'fontSize': '32px',
             'textAlign': 'center',
@@ -55,7 +55,7 @@ def init_app_layout(fig_bar, fig_map):
         }, children=[
 
             html.Div(style={'flex': '1', 'minWidth': '500px', 'paddingRight': '20px'}, children=[
-                html.H2("Accidents by Region", style={'fontSize': '20px', 'fontWeight': '600'}),
+                html.H2("Accidents by region", style={'fontSize': '20px', 'fontWeight': '600'}),
                 dcc.Graph(
                     figure=fig_map,
                     id='accident-map',
@@ -69,7 +69,7 @@ def init_app_layout(fig_bar, fig_map):
 
             html.Div(style={'flex': '1', 'minWidth': '350px'}, children=[
                 html.Div(style={'display': 'flex', 'alignItems': 'center', 'gap': '10px', 'marginBottom': '20px'}, children=[
-                    html.Label("Select Time Granularity:", style={'fontWeight': '600'}),
+                    html.Label("Select time granularity:", style={'fontWeight': '600'}),
                     dcc.Dropdown(
                         id='granularity-region-selector',
                         options=[

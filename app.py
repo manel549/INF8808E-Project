@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 import pages.dashboard
 import pages.polar_grave_surface
 import pages.temporal_spatial
-app = Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = Dash(__name__, suppress_callback_exceptions=True, external_stylesheets=[dbc.themes.BOOTSTRAP],title="Quebec road accidents")
 server = app.server
 import dash_bootstrap_components as dbc
 import plotly.io as pio
@@ -24,11 +24,11 @@ sidebar = dbc.Nav(
     [
         html.H2("Menu", className="sidebar-title", style={"paddingBottom": "1rem", "color": "#2c3e50"}),
         dbc.NavLink("Home", href="/", active="exact", className="sidebar-link"),
-        dbc.NavLink("Dashboard", href="/dashboard", active="exact", className="sidebar-link"),
-        dbc.NavLink("Accident Visualizations", href="/accident_visualizations", active="exact", className="sidebar-link"),
-        dbc.NavLink("Road Severity", href="/road_severity", active="exact", className="sidebar-link"),
-        dbc.NavLink("BarPolar: Road Surface, Season, and Accident Severity", href="/polar_grave_surface", active="exact", className="sidebar-link"),
-         dbc.NavLink("Spatial and temporel", href="/temporal_spatial", active="exact", className="sidebar-link")
+        dbc.NavLink("General patterns", href="/accident_visualizations", active="exact", className="sidebar-link"),
+        dbc.NavLink("Spatio-temporal insights", href="/temporal_spatial", active="exact", className="sidebar-link"),
+        dbc.NavLink("Environmental factors", href="/dashboard", active="exact", className="sidebar-link"),
+        dbc.NavLink("Road patterns", href="/road_severity", active="exact", className="sidebar-link"),
+        dbc.NavLink("Seasonal trends", href="/polar_grave_surface", active="exact", className="sidebar-link"),
     ],
     vertical=True,
     pills=True,
