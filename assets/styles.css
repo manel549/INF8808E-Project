@@ -42,3 +42,24 @@
     text-align: center;
     margin-bottom: 2rem;
 }
+.custom-slider .rc-slider-rail {
+    background-color: #e0dee6; 
+    height: 8px;
+}
+
+.custom-slider .rc-slider-track {
+    background-color: #007bff; 
+    height: 8px;
+}
+
+.custom-slider .rc-slider-handle {
+    border: solid 2px #007bff;
+    height: 24px;
+    width: 24px;
+    margin-top: -8px;
+    background-color:#007bff;
+}
+
+.custom-slider .rc-slider-handle:hover {
+    border-color: #011020;
+}

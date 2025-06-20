@@ -139,25 +139,29 @@ layout = html.Div([
 
     # Section graphique + carte
     dbc.Row([
-        dbc.Col([html.Div(id='main-graph')], width=8),
-        dbc.Col([html.Div(id='map-container')], width=4),
+        dbc.Col([html.Div(id='main-graph')], width=7),
+        dbc.Col([html.Div(id='map-container')], width=5),
     ]),
 
     # Slider année
     dbc.Row([
-        dbc.Col([
-            html.Label("Filter by year"),
-            dcc.Slider(
-                id='filter-annee',
-                min=df['AN'].min(),
-                max=df['AN'].max(),
-                value=df['AN'].min(),
-                marks={int(year): str(int(year)) for year in sorted(df['AN'].unique())},
-                step=1,
-                tooltip={"placement": "bottom", "always_visible": True}
-            )
-        ], width=12, className='mt-5')
-    ])
+    dbc.Col([
+        html.Label("Filter by Year", style={"fontWeight": "bold", "fontSize": "18px", "marginBottom": "10px"}),
+        dcc.Slider(
+            id='filter-annee',
+            min=df['AN'].min(),
+            max=df['AN'].max(),
+            value=df['AN'].min(),
+            marks={int(year): str(int(year)) for year in sorted(df['AN'].unique())},
+            step=1,
+            tooltip={"placement": "bottom", "always_visible": True},
+            updatemode='drag', 
+            included=False,  
+            className='custom-slider'  
+        )
+    ], width=12, className='mt-4 mb-5')
+])
+
 ], className='container-fluid')
 
 @callback(
@@ -237,6 +241,31 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
     if env: dff = dff[dff['Environment_Label'] == env]
     if road: dff = dff[dff['CD_ASPCT_ROUTE'] == road]
     if const: dff = dff[dff['CD_ZON_TRAVX_ROUTR'] == const]
+
+    if dff.empty: 
+        fig = go.Figure()
+        fig.update_layout(
+            title={
+                'text': "No results match the selected filters! Please adjust your filters.",
+                'y': 0.5,
+                'x': 0.5,
+                'xanchor': 'center',
+                'yanchor': 'middle',
+            },
+            title_font=dict(
+                family='Arial',
+                size=18,
+                color='black',
+                weight='bold' 
+            ),
+            xaxis={"visible": False},
+            yaxis={"visible": False},
+            plot_bgcolor="white",
+            margin={"t": 40, "b": 40}
+        )
+        return dcc.Graph(figure=fig), html.Div()
+
+
 
     # Create main graph based on selection
     if selected == 'weather':
@@ -340,35 +369,118 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
     else:
         fig = go.Figure()
 
-    # Carte corrigée
+        # Copie des données filtrées
+        
     map_df = dff.copy()
-    
 
-    
-    # Création de la carte seulement s'il y a des données
-    if not map_df.empty and 'lat' in map_df.columns and 'lon' in map_df.columns:
+    # Calcul des statistiques par région
+    region_stats = map_df.groupby('Region').agg(
+        Total_Accidents=('GRAVITE', 'count'),
+        Materiels=('GRAVITE', lambda x: (x == 'Matériels').sum()), 
+        Graves=('GRAVITE', lambda x: (x == 'Grave').sum()),
+        Legers=('GRAVITE', lambda x: (x == 'Léger').sum()),
+        Mineurs=('GRAVITE', lambda x: (x == 'Mineurs').sum()),
+        lat=('lat', 'first'),
+        lon=('lon', 'first')
+    ).reset_index()
+
+    # Calcul des taux
+    region_stats['Materiels'] = pd.to_numeric(region_stats['Materiels'], errors='coerce').fillna(0)
+    region_stats['Total_Accidents'] = pd.to_numeric(region_stats['Total_Accidents'], errors='coerce').fillna(0)
+    region_stats['Graves'] = pd.to_numeric(region_stats['Graves'], errors='coerce').fillna(0)
+    region_stats['Legers'] = pd.to_numeric(region_stats['Legers'], errors='coerce').fillna(0)
+    region_stats['Mineurs'] = pd.to_numeric(region_stats['Mineurs'], errors='coerce').fillna(0)
+
+    region_stats['Taux_Materiel'] = (region_stats['Materiels'] / region_stats['Total_Accidents'] * 100).round(2)
+    region_stats['Taux_Grave'] = (region_stats['Graves'] / region_stats['Total_Accidents'] * 100).round(2)
+    region_stats['Taux_Leger'] = (region_stats['Legers'] / region_stats['Total_Accidents'] * 100).round(2)
+    region_stats['Taux_Mineur'] = (region_stats['Mineurs'] / region_stats['Total_Accidents'] * 100).round(2)
+
+
+    if not region_stats.empty:
+        
+        color_col = 'Taux_Materiel'  
+
         map_fig = px.scatter_mapbox(
-            map_df,
+            region_stats,
             lat='lat',
             lon='lon',
+            size='Total_Accidents',
+            color=color_col,
             hover_name='Region',
-            hover_data=['GRAVITE', 'CD_COND_METEO', 'CD_ETAT_SURFC'],
-            color='GRAVITE',
+            hover_data={
+                'Total_Accidents': True,
+                'Materiels': True,
+                'Graves': True,
+                'Legers': True,
+                'Mineurs': True,
+                'Taux_Materiel': ':.2f',
+                'Taux_Grave': ':.2f',
+                'Taux_Leger': ':.2f',
+                'Taux_Mineur': ':.2f',
+                'lat': False,
+                'lon': False
+            },
+            size_max=30,
             zoom=5,
-            center={"lat": 46.8, "lon": -71.2},  # Centre sur Québec
-            height=500,
-            title=f"Accidents by Region - {annee}"
+            center={"lat": 46.8, "lon": -71.2},
+            height=600,
+            title=f"Accidents by Region - {annee}",
+            color_continuous_scale="YlOrRd",
+            labels={color_col: 'Rate (%)'}
         )
+
         map_fig.update_layout(
             mapbox_style="open-street-map",
-            margin={"r":0,"t":30,"l":0,"b":0}
+            margin={"r":0,"t":40,"l":0,"b":0},
+            coloraxis_colorbar=dict(
+                title="Rate (%)",
+                thickness=10,
+                len=0.5,
+                yanchor="middle",
+                y=0.5
+            )
         )
+
+        map_fig.update_traces(
+            hovertemplate=(
+                "<b>%{hovertext}</b><br><br>" +
+                "Total accidents: %{customdata[0]}<br>" +
+                "Material accidents: %{customdata[1]} (%{customdata[5]}%)<br>" +
+                "Severe accidents: %{customdata[2]} (%{customdata[6]}%)<br>" +
+                "Light accidents: %{customdata[3]} (%{customdata[7]}%)<br>" +
+                "Minor accidents: %{customdata[4]} (%{customdata[8]}%)<extra></extra>"
+            )
+        )
+
     else:
         map_fig = go.Figure()
         map_fig.update_layout(
-            title="No data to display for selected filters",
+            title={
+                'text': "No results match the selected filters! Please adjust your filters.",
+                'y': 0.5,
+                'x': 0.5,
+                'xanchor': 'center',
+                'yanchor': 'middle',
+            },
+            title_font=dict(
+                family='Arial',
+                size=18,
+                color='black',
+                weight='bold' 
+            ),
             xaxis={"visible": False},
-            yaxis={"visible": False}
+            yaxis={"visible": False},
+            plot_bgcolor="white",
+            margin={"t": 40, "b": 40}
         )
+        return dcc.Graph(figure=map_fig), html.Div()
 
-    return dcc.Graph(figure=fig), dcc.Graph(figure=map_fig)
+    return dcc.Graph(figure=fig), dcc.Graph(
+        figure=map_fig,
+        config={
+            'scrollZoom': True,
+            'displayModeBar': True,
+            'displaylogo': False
+        }
+    )
