@@ -11,11 +11,6 @@ from pages.template import create_template
 
 from data import get_dataframe
 
-
-def prep_data():
-    get_dataframe("data")
-
-
 def clean_region_names(df):
     df['region'] = df['region'].str.replace(r'\s*\(\d+\)', '', regex=True).str.upper()
     return df
@@ -131,11 +126,14 @@ def init_app_layout(fig_bar, fig_map):
     ])
 
 create_template()
-df_bar = get_dataframe("data")
-fig_bar = bar_chart.init_figure()
-fig_bar = bar_chart.draw(fig_bar, df_bar, mode='count', type_col='GRAVITE', granularity='year')
+COLUMNS = "REG_ADM, JR_SEMN_ACCDN, GRAVITE, AN"
+df_global = get_dataframe("data", cols=COLUMNS)
 
-df_map = map_chart.prepare_region_data()
+
+fig_bar = bar_chart.init_figure()
+fig_bar = bar_chart.draw(fig_bar, df_global, mode='count', type_col='GRAVITE', granularity='AN')
+
+df_map = map_chart.prepare_region_data(df_global)
 df_map = clean_region_names(df_map)
 fig_map = map_chart.draw_geo_map(df_map, center_lat=47.5, center_lon=-71.5, zoom=4.5)
 
@@ -144,40 +142,49 @@ layout = html.Div([
     init_app_layout(fig_bar, fig_map)
 ])
 
-def register_callbacks(app):
-
-    @app.callback(
+@callback(
         Output('selected-region', 'data'),
         Input('accident-map', 'clickData')
     )
-    def store_clicked_region(clickData):
-        print("ClickData received:", clickData)
+def store_clicked_region(clickData):
         if clickData:
             return clickData['points'][0]['customdata'][0]
         return None
 
-    @app.callback(
+@callback(
         Output('region-info', 'children'),
         Input('selected-region', 'data'),
         Input('granularity-region-selector', 'value')
     )
-    def update_region_bar_chart(region_clicked, granularity):
-        if region_clicked:
-            df = get_dataframe("data")
-            if df is None or df.empty:
-                return bar_chart.init_figure("Aucune donnée")
-            df['JR_SEMN_ACCDN'] = df['JR_SEMN_ACCDN'].replace({'SEM': 'Weekday', 'FDS': 'Weekend'})
-            fig = bar_chart_region.init_figure(f"Accidents in {region_clicked}")
-            fig = bar_chart_region.draw(fig, df, mode='count', type_col='GRAVITE', region=region_clicked, granularity=granularity)
-            return dcc.Graph(figure=fig, style={'width': '100%', 'height': '500px'})
-        return html.P("", style={'fontSize': '14px'})
+def update_region_bar_chart(region_clicked, granularity):
+    if region_clicked:
+        df = get_dataframe("data", cols="REG_ADM, JR_SEMN_ACCDN, GRAVITE, AN, MS_ACCDN, HR_ACCDN")
 
-    @app.callback(
+        if df is None or df.empty:
+            return bar_chart.init_figure("Aucune donnée")
+
+        df['JR_SEMN_ACCDN'] = df['JR_SEMN_ACCDN'].replace({'SEM': 'Weekday', 'FDS': 'Weekend'})
+
+        # Pas besoin de filtrer ici, c'est fait dans draw()
+        fig = bar_chart_region.init_figure(f"Accidents in {region_clicked}")
+        fig = bar_chart.draw(fig, df, mode='count', type_col='GRAVITE', granularity=granularity.lower())
+
+
+        return dcc.Graph(figure=fig, style={'width': '100%', 'height': '500px'})
+    return html.P("", style={'fontSize': '14px'})
+
+
+@callback(
         Output('bar-chart', 'figure'),
         Input('granularity-selector', 'value')
     )
-    def update_bar_chart(granularity):
-        df = get_dataframe("data")
+def update_bar_chart(granularity):
+        
+        df = get_dataframe(
+                    "data",
+                    cols="REG_ADM, JR_SEMN_ACCDN, GRAVITE, AN, HR_ACCDN, MS_ACCDN"
+                    
+                )
         if df is None or df.empty:
             return bar_chart.init_figure("Aucune donnée")
         df['JR_SEMN_ACCDN'] = df['JR_SEMN_ACCDN'].replace({'SEM': 'Weekday', 'FDS': 'Weekend'})

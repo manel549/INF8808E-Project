@@ -3,21 +3,15 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
-#from data import df 
-
-from sqlalchemy import create_engine
-
-from sqlalchemy import create_engine
-import pandas as pd
-from sqlalchemy.exc import OperationalError
 
 from data import get_dataframe
 
-df = get_dataframe("data") 
-
-
-
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+
+
+COLUMNS = "CD_COND_METEO,CD_ECLRM , GRAVITE, CD_ETAT_SURFC, CD_ENVRN_ACCDN, REG_ADM, AN, CD_ASPCT_ROUTE, CD_ZON_TRAVX_ROUTR "
+df= get_dataframe("data", cols=COLUMNS)
+
 
 # Préparation des colonnes
 df['GRAVITE'] = df['GRAVITE'].replace({
@@ -349,10 +343,7 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
     # Carte corrigée
     map_df = dff.copy()
     
-    # Debug: vérifiez les données avant création de la carte
-    print("Régions présentes:", map_df['Region'].unique())
-    print("Valeurs de lat:", map_df['lat'].unique())
-    print("Valeurs de lon:", map_df['lon'].unique())
+
     
     # Création de la carte seulement s'il y a des données
     if not map_df.empty and 'lat' in map_df.columns and 'lon' in map_df.columns:
