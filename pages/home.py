@@ -22,13 +22,14 @@ def get_kpis(data):
     if len(surface_mode_code) > 0:
         surface_code = surface_mode_code.iloc[0]
         surface_labels = {
-            11: "Sec", 12: "Mouillé", 13: "Aquaplanage", 14: "Sable/Gravier",
-            15: "Neige fondante", 16: "Neige", 17: "Neige durcie",
-            18: "Glacé", 19: "Boueux", 99: "Autre"
+            11: "Dry", 12: "Wet", 13: "Aquaplaning", 14: "Sand/Gravel",
+            15: "Slushy Snow", 16: "Snow", 17: "Packed Snow",
+            18: "Icy", 19: "Muddy", 99: "Other"
         }
-        surface_label = surface_labels.get(surface_code, "Inconnu")
+        surface_label = surface_labels.get(surface_code, "Unknown")
     else:
-        surface_label = "Inconnu"
+        surface_label = "Unknown"
+
     
     return total_accidents, severe_accidents, surface_label
 
@@ -36,7 +37,7 @@ total_acc, severe_acc, common_surface = get_kpis(df)
 
 layout = html.Div([
     html.H1(
-        "Quebec Road Accidents Dashboard",
+        "Quebec road accidents insights",
         style={
             'textAlign': 'center',
             'marginBottom': '40px',
@@ -47,9 +48,9 @@ layout = html.Div([
 
     html.Div([
         html.P(
-            "This dashboard presents various visualizations of road accidents in Quebec "
+            "This website presents various visualizations of road accidents in Quebec "
             "based on data related to severity, user types, weather, road surface conditions, "
-            "lighting, and time patterns.",
+            "lighting and time patterns.",
             style={
                 'fontSize': '18px',
                 'textAlign': 'center',
@@ -65,11 +66,11 @@ layout = html.Div([
     ]),
 
     html.Div([
-        html.H2("Key Statistics", style={'textAlign': 'center', 'marginBottom': '30px', 'color': '#34495E'}),
+        html.H2("Key statistics", style={'textAlign': 'center', 'marginBottom': '30px', 'color': '#34495E'}),
 
         html.Div([
             html.Div([
-                html.H3("Total Accidents", style={'color': '#2980B9'}),
+                html.H3("Total accidents", style={'color': '#2980B9'}),
                 html.P(f"{total_acc:,}",
                        style={
                            'fontSize': '36px',
@@ -80,7 +81,7 @@ layout = html.Div([
             ], className='kpi-card'),
 
             html.Div([
-                html.H3("Severe Accidents", style={'color': '#E74C3C'}),
+                html.H3("Severe accidents", style={'color': '#E74C3C'}),
                 html.P(f"{severe_acc:,}",
                        style={
                            'fontSize': '36px',
@@ -91,7 +92,7 @@ layout = html.Div([
             ], className='kpi-card'),
 
             html.Div([
-                html.H3("Most Common Surface", style={'color': '#27AE60'}),
+                html.H3("Most common surface", style={'color': '#27AE60'}),
                 html.P(common_surface,
                        style={
                            'fontSize': '36px',

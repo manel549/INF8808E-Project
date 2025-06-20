@@ -69,7 +69,7 @@ gravite_options = [{'label': g, 'value': g} for g in df['GRAVITE'].unique()]
 
 # Layout principal
 layout = html.Div([
-    html.H1("Road Accident Dashboard – Quebec", className='text-center pb-3'),
+    html.H1("Environmental impact on road accidents in Quebec ", className='text-center pb-3'),
 
     html.Div([
    

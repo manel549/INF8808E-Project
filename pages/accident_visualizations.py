@@ -10,8 +10,8 @@ pd.set_option('future.no_silent_downcasting', True)
 # Function to create Bar chart for Accidents by User Type (Day vs Night)
 def accidents_by_user_type_day_night(df):
     usager_cols = {
-        'IND_AUTO_CAMION_LEGER': 'Light Vehicles',
-        'IND_VEH_LOURD': 'Heavy Vehicles',
+        'IND_AUTO_CAMION_LEGER': 'Light vehicles',
+        'IND_VEH_LOURD': 'Heavy vehicles',
         'IND_MOTO_CYCLO': 'Motorcycles',
         'IND_VELO': 'Bicycles',
         'IND_PIETON': 'Pedestrians'
@@ -64,24 +64,31 @@ def accidents_by_user_type_day_night(df):
 
     # Buttons for interactivity
     fig.update_layout(
-        title="Number of Accidents by User Type (Day vs Night)",
-        xaxis_title="User Type",
-        yaxis_title="Number of Accidents",
+        title="Number of accidents by road user type (Day vs Night)",
+        xaxis_title="User type",
+        yaxis_title="Number of accidents",
         updatemenus=[dict(
-            type="buttons",
-            direction="right",
-            buttons=[
-                dict(label="Day",
-                     method="update",
-                     args=[{"visible": [True, False]}, {"title": "Number of Accidents by User Type - Day"}]),
-                dict(label="Night",
-                     method="update",
-                     args=[{"visible": [False, True]}, {"title": "Number of Accidents by User Type - Night"}])
-            ],
-            showactive=True,
-            x=0.57,
-            y=1.15
-        )]
+    type="buttons",
+    direction="right",
+    buttons=[
+        dict(label="Day",
+             method="update",
+             args=[
+                 {"visible": [True, False]},
+                 {"layout": {"title": "Number of accidents by road user type - Day"}}
+             ]),
+        dict(label="Night",
+             method="update",
+             args=[
+                 {"visible": [False, True]},
+                 {"layout": {"title": "Number of accidents by road user type - Night"}}
+             ])
+    ],
+    showactive=True,
+    x=0.57,
+    y=1.15
+)]
+
     )
     return fig
 
@@ -90,8 +97,8 @@ def accident_severity_month(df):
     gravite_map = {
         "Léger": "Minor",
         "Mortel ou grave": "Severe",
-        "Dommages matériels seulement": "Material Damage",
-        "Dommages matériels inférieurs au seuil de rapportage": "Low Damage"
+        "Dommages matériels seulement": "Material damage",
+        "Dommages matériels inférieurs au seuil de rapportage": "Low damage"
     }
 
     df_clean = df.copy()
@@ -124,8 +131,8 @@ def accident_severity_month(df):
     color_map = {
         "Severe": "darkred",
         "Minor": "lightgreen",
-        "Material Damage": "steelblue",
-        "Low Damage": "lightgrey"
+        "Material damage": "steelblue",
+        "Low damage": "lightgrey"
     }
 
     # Add traces for Day and Night
@@ -152,18 +159,19 @@ def accident_severity_month(df):
     buttons = [
         dict(label="Day",
              method="update",
-             args=[{"visible": [True]*n_grav + [False]*n_grav},
-                   {"title": "Monthly Accident Severity (Daytime)"}]),
+             args=[{"visible": [True,False]},
+                   {"layout": {"title": "Monthly Accident Severity (Day vs Night)"}}
+                   ]),
         dict(label="Night",
              method="update",
-             args=[{"visible": [False]*n_grav + [True]*n_grav},
-                   {"title": "Monthly Accident Severity (Nighttime)"}])
+             args=[{"visible": [True,False]},
+                   {"layout": {"title":"Monthly Accident Severity (Day vs Night)"}}
+                   ])
     ]
-
     fig.update_layout(
-        title="Monthly Accident Severity (Daytime)",
-        xaxis_title="Month",
-        yaxis_title="Number of Accidents",
+        title="Monthly accident severity (Day vs Night)",
+        xaxis_title="",
+        yaxis_title="Number of accidents",
         barmode='stack',
         updatemenus=[dict(
             type="buttons",
@@ -225,13 +233,13 @@ def generate_severe_accidents_heatmap(df):
         text=hover_text,
         hoverinfo="text",
         colorscale='Reds',
-        colorbar=dict(title="Accidents")
+        colorbar=dict(title="Severe accidents")
     ))
 
     fig.update_layout(
-        title="Severe Accidents by Region and Month (Hover for Details)",
-        xaxis_title="Month",
-        yaxis_title="Administrative Region",
+        title="Severe accidents by region and month ",
+        xaxis_title="",
+        yaxis_title="Region",
         width=1200,   
         height=800   
     )
@@ -246,8 +254,8 @@ def generate_accident_severity_bar_chart(df):
     gravite_map = {
         "Léger": "Minor",
         "Mortel ou grave": "Severe",
-        "Dommages matériels seulement": "Material Damage",
-        "Dommages matériels inférieurs au seuil de rapportage": "Low Damage"
+        "Dommages matériels seulement": "Material damage",
+        "Dommages matériels inférieurs au seuil de rapportage": "Low damage"
     }
 
     # Mapping jour/semaine → anglais
@@ -270,9 +278,9 @@ def generate_accident_severity_bar_chart(df):
                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     weektype_order = ['Weekday', 'Weekend']
     hour_order = [
-        '00:00:00-03:59:00', '04:00:00-07:59:00',
-        '08:00:00-11:59:00', '12:00:00-15:59:00',
-        '16:00:00-19:59:00', '20:00:00-23:59:00'
+        '00:00-03:59', '04:00-07:59',
+        '08:00-11:59', '12:00-15:59',
+        '16:00-19:59', '20:00-23:59'
     ]
 
     # Fonction de regroupement
@@ -292,10 +300,10 @@ def generate_accident_severity_bar_chart(df):
     color_map = {
         "Severe": "darkred",
         "Minor": "lightgreen",
-        "Material Damage": "steelblue",
-        "Low Damage": "lightgrey"
+        "Material damage": "steelblue",
+        "Low damage": "lightgrey"
     }
-    gravities = ["Severe", "Minor", "Material Damage", "Low Damage"]
+    gravities = ["Severe", "Minor", "Material damage", "Low damage"]
 
     # Création de la figure
     fig = go.Figure()
@@ -336,25 +344,24 @@ def generate_accident_severity_bar_chart(df):
     # Boutons de sélection
     n = len(gravities)
     buttons = [
-        dict(label="By Month",
+        dict(label="By month",
              method="update",
-             args=[{"visible": [True]*n + [False]*n + [False]*n},
-                   {"title": "Accident Severity by Month"}]),
-        dict(label="By Week Type",
+             args=[{"visible": [True,False]},
+                   {"layout": {"title": "Accident frequency"}}]),
+        dict(label="By week type",
              method="update",
-             args=[{"visible": [False]*n + [True]*n + [False]*n},
-                   {"title": "Accident Severity by Week Type"}]),
-        dict(label="By Hour Range",
+             args=[{"visible": [True,False]},
+                   {"layout": {"title": "Accidents frequency"}}]),
+        dict(label="By hour range",
              method="update",
-             args=[{"visible": [False]*n + [False]*n + [True]*n},
-                   {"title": "Accident Severity by Time of Day"}])
+             args=[{"visible": [True,False]},
+                   {"layout": {"title": "Accident frequency"}}])
     ]
-
     # Mise en page
     fig.update_layout(
         title="Accident Severity by Month",
-        xaxis_title="Time Category",
-        yaxis_title="Number of Accidents",
+        xaxis_title="",
+        yaxis_title="Number of accidents",
         barmode='stack',
         updatemenus=[dict(
             type="buttons",
@@ -383,7 +390,7 @@ df = df.rename(columns=lambda x: x.strip())
 
 # -- Layout principal de la page --
 layout = html.Div([
-    html.H1("Accident Visualizations Dashboard", style={
+    html.H1("Road users and severity analysis", style={
         'textAlign': 'center',
         'marginTop': '30px',
         'marginBottom': '40px',
@@ -391,68 +398,46 @@ layout = html.Div([
     }),
 
     html.Div([
-    html.P("This dashboard provides clear, interactive insights into road accident patterns across Quebec. It helps answer key questions like:", style={'marginTop': '20px'}),
-    html.Ul([
-        html.Li("What types of road users are most frequently involved in road accidents?"),
-        html.Li("When and where do the most severe accidents occur?")
-    ]),
-     html.Details([
-            html.Summary("Click to expand full description", style={"cursor": "pointer"}),
-
-  html.H3("Accidents by Road User and Time of Day", style={'marginTop': '40px'}),
-    html.P("This bar chart breaks down accidents by user type, segmented into day (08:00–19:59) and night (20:00–07:59)."),
-    html.Ul([
-        html.Li("Light Vehicles (cars, small trucks)"),
-        html.Li("Heavy Vehicles (trucks, buses)"),
-        html.Li("Motorcycles"),
-        html.Li("Bicycles"),
-        html.Li("Pedestrians")
-    ]),
-    html.P("You can toggle between day and night stats. Hovering over the bars reveals exact accident counts."),
-
-    html.H4("Insights:", style={'marginTop': '20px'}),
-    html.P("Light vehicles consistently top the chart during both time frames. Pedestrian and bicycle accidents show noticeable variations between day and night.")
-],  open=False)], style={'padding': '30px', 'maxWidth': '900px', 'margin': 'auto'}),
+    html.P("This interactive dashboard offers clear insights into road accident patterns across Quebec. It helps identify which types of road users are most frequently involved in accidents, as well as when and where the most severe accidents tend to occur. This dashboard supports a deeper understanding of road safety dynamics across the province.", style={'marginTop': '20px'}),
+     ], style={'padding': '30px', 'maxWidth': '900px', 'margin': 'auto'}),
 
 
   html.Div([
     dcc.Tabs([
-        dcc.Tab(label='Accidents by User Type (Day/Night)', children=[
+        dcc.Tab(label='Accidents by road user', children=[
             html.Div([
-                html.H3("Comparison of User Type Involvement in Day vs Night", style={'textAlign': 'center'}),
+                html.H3("Road user type involvement", style={'textAlign': 'center'}),
+                html.P("This bar chart breaks down accidents by user type, segmented into day and night and you can toggle between day and night stats."),
                 dcc.Graph(figure=accidents_by_user_type_day_night(df))
             ], style={'padding': '30px'})
         ]),
 
-        dcc.Tab(label='Severity by Month (Day/Night)', children=[
+        dcc.Tab(label='Severity by month', children=[
             html.Div([
-                html.H3("Monthly Severity Distribution: Day vs Night", style={'textAlign': 'center'}),
+                html.H3("Monthly distribution of accident types", style={'textAlign': 'center'}),
+                html.P("This stacked bar chart shows the monthly distribution of road accidents by type. You can toggle between day and night. You can also deselect types by clicking on a category in the legend to hide or show it."),
                 dcc.Graph(figure=accident_severity_month(df))
             ], style={'padding': '30px'})
         ]),
-
-        dcc.Tab(label='Severe Accidents Heatmap', children=[
+        dcc.Tab(label='Severity over time', children=[
             html.Div([
-                html.H3("Severe Accidents by Region and Month", style={'textAlign': 'center'}),
-                dcc.Graph(figure=generate_severe_accidents_heatmap(df)),
-
-                html.H3(" Heatmap of Severe Accidents by Region and Month", style={'marginTop': '40px'}),
-                html.P("This interactive heatmap shows the monthly distribution of severe road accidents across Quebec’s administrative regions. "
-                       "Darker red cells indicate more severe accidents. The data is filtered to include only severe cases, and region names are standardized."),
-                html.P("When you hover over a cell, you’ll see the region, month, and exact number of accidents."),
-                html.P("For example: '142 severe accidents in Montérégie during July'. The layout is fully responsive."),
-
-                html.H4("Insights:", style={'marginTop': '20px'}),
-                html.P("Montérégie and Montréal are hotspots, especially from June to October. Winter months (January to March) show significantly lower accident counts.")
-            ], style={'padding': '30px'})
-        ]),
-
-        dcc.Tab(label='Severity by Month / Week / Hour', children=[
-            html.Div([
-                html.H3("Severity Breakdown: Monthly, Weekly, and Hourly Views", style={'textAlign': 'center'}),
+                html.H3("Frequency breakdown", style={'textAlign': 'center'}),
+                html.P("This interactive dashboard visualizes how the frequency of road accidents varies over time. You can toggle between monthly, weekly, and hourly views. Additionally, you can show or hide specific accidents types by clicking on categories in the legend."),
                 dcc.Graph(figure=generate_accident_severity_bar_chart(df))
             ], style={'padding': '30px'})
         ]),
+        dcc.Tab(label='Severe accidents heatmap', children=[
+            html.Div([
+                html.H3("Severe accidents by region and month", style={'textAlign': 'center'}),
+                html.P("This interactive heatmap shows the monthly distribution of severe road accidents across Quebec’s administrative regions. "
+                       "Darker red cells indicate more severe accidents. When you hover over a cell, you’ll see the region, month, and exact number of accidents."),
+                dcc.Graph(figure=generate_severe_accidents_heatmap(df)),
+
+                
+            ], style={'padding': '30px'})
+        ]),
+
+        
     ])
 ], style={'width': '95%', 'margin': '0 auto'})
 ])

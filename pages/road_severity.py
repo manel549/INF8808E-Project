@@ -136,17 +136,17 @@ def create_sankey_chart(df):
     ))
 
     buttons = [
-        dict(label="Road Category",
+        dict(label="Road Category   ",
              method="update",
              args=[{"visible": [True, False]}, {"title": "Accident Severity: Road Category → Severity"}]),
-        dict(label="Road Configuration",
+        dict(label="   Road Configuration",
              method="update",
              args=[{"visible": [False, True]}, {"title": "Accident Severity: Road Configuration → Severity"}])
     ]
 
     fig_sankey.update_layout(
-        title="Sankey Diagram",
-        updatemenus=[dict(type="buttons", buttons=buttons, x=0.5, xanchor="center", y=1.1, yanchor="top")],
+        title="",
+        updatemenus=[dict(type="buttons", direction="right",buttons=buttons, x=0.5, xanchor="center", y=1.1, yanchor="top")],
         template="plotly_white",
         height=600,
         width=900
