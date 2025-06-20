@@ -159,14 +159,12 @@ def accident_severity_month(df):
     buttons = [
         dict(label="Day",
              method="update",
-             args=[{"visible": [True,False]},
-                   {"layout": {"title": "Monthly Accident Severity (Day vs Night)"}}
-                   ]),
+             args=[{"visible": [True]*n_grav + [False]*n_grav},
+                   {"title": "Monthly Accident Severity (Daytime)"}]),
         dict(label="Night",
              method="update",
-             args=[{"visible": [True,False]},
-                   {"layout": {"title":"Monthly Accident Severity (Day vs Night)"}}
-                   ])
+             args=[{"visible": [False]*n_grav + [True]*n_grav},
+                   {"title": "Monthly Accident Severity (Nighttime)"}])
     ]
     fig.update_layout(
         title="Monthly accident severity (Day vs Night)",
@@ -247,138 +245,6 @@ def generate_severe_accidents_heatmap(df):
     return fig
 
 
-
-# Function to generate a bar chart for accident severity by month, week type, and hour range
-def generate_accident_severity_bar_chart(df):
-    # Mapping gravité → anglais
-    gravite_map = {
-        "Léger": "Minor",
-        "Mortel ou grave": "Severe",
-        "Dommages matériels seulement": "Material damage",
-        "Dommages matériels inférieurs au seuil de rapportage": "Low damage"
-    }
-
-    # Mapping jour/semaine → anglais
-    weektype_map = {
-        'SEM': 'Weekday',
-        'FDS': 'Weekend'
-    }
-
-    # Chargement et nettoyage
-    df_clean = df.copy()
-    df_clean['GRAVITE'] = df_clean['GRAVITE'].map(gravite_map)
-    df_clean['JR_SEMN_ACCDN'] = df_clean['JR_SEMN_ACCDN'].map(weektype_map)
-    df_clean['MS_ACCDN'] = pd.to_numeric(df_clean['MS_ACCDN'], errors='coerce').astype("Int64")
-
-    # Supprimer les lignes incomplètes
-    df_clean = df_clean.dropna(subset=['GRAVITE', 'MS_ACCDN', 'JR_SEMN_ACCDN', 'HR_ACCDN'])
-
-    # Labels d'affichage
-    month_labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    weektype_order = ['Weekday', 'Weekend']
-    hour_order = [
-        '00:00-03:59', '04:00-07:59',
-        '08:00-11:59', '12:00-15:59',
-        '16:00-19:59', '20:00-23:59'
-    ]
-
-    # Fonction de regroupement
-    def get_grouped_data(df, group_col, order_labels):
-        grouped = df.groupby([group_col, 'GRAVITE']).size().reset_index(name='Count')
-        pivot = grouped.pivot(index=group_col, columns='GRAVITE', values='Count').fillna(0)
-        pivot = pivot.reindex(order_labels)
-        return pivot
-
-    # Données agrégées
-    month_data = get_grouped_data(df_clean, 'MS_ACCDN', list(range(1, 13)))
-    month_data.index = month_labels
-    weektype_data = get_grouped_data(df_clean, 'JR_SEMN_ACCDN', weektype_order)
-    hour_data = get_grouped_data(df_clean, 'HR_ACCDN', hour_order)
-
-    # Couleurs personnalisées
-    color_map = {
-        "Severe": "darkred",
-        "Minor": "lightgreen",
-        "Material damage": "steelblue",
-        "Low damage": "lightgrey"
-    }
-    gravities = ["Severe", "Minor", "Material damage", "Low damage"]
-
-    # Création de la figure
-    fig = go.Figure()
-
-    # Traces pour MONTH
-    for grav in gravities:
-        y = month_data[grav] if grav in month_data else [0] * len(month_data)
-        fig.add_trace(go.Bar(
-            x=month_data.index,
-            y=y,
-            name=grav,
-            marker_color=color_map.get(grav, 'gray'),
-            visible=True
-        ))
-
-    # Traces pour WEEK TYPE
-    for grav in gravities:
-        y = weektype_data[grav] if grav in weektype_data else [0] * len(weektype_data)
-        fig.add_trace(go.Bar(
-            x=weektype_data.index,
-            y=y,
-            name=grav,
-            marker_color=color_map.get(grav, 'gray'),
-            visible=False
-        ))
-
-    # Traces pour HOUR RANGE
-    for grav in gravities:
-        y = hour_data[grav] if grav in hour_data else [0] * len(hour_data)
-        fig.add_trace(go.Bar(
-            x=hour_data.index,
-            y=y,
-            name=grav,
-            marker_color=color_map.get(grav, 'gray'),
-            visible=False
-        ))
-
-    # Boutons de sélection
-    n = len(gravities)
-    buttons = [
-        dict(label="By month",
-             method="update",
-             args=[{"visible": [True,False]},
-                   {"layout": {"title": "Accident frequency"}}]),
-        dict(label="By week type",
-             method="update",
-             args=[{"visible": [True,False]},
-                   {"layout": {"title": "Accidents frequency"}}]),
-        dict(label="By hour range",
-             method="update",
-             args=[{"visible": [True,False]},
-                   {"layout": {"title": "Accident frequency"}}])
-    ]
-    # Mise en page
-    fig.update_layout(
-        title="Accident Severity by Month",
-        xaxis_title="",
-        yaxis_title="Number of accidents",
-        barmode='stack',
-        updatemenus=[dict(
-            type="buttons",
-            direction="right",
-            buttons=buttons,
-            showactive=True,
-            x=0.6,
-            y=1.15
-        )],
-        hoverlabel=dict(
-            bgcolor="white",
-            font=dict(color="black")
-        )
-    )
-
-    return fig
-
 df = get_dataframe("data") 
 
 
@@ -417,13 +283,6 @@ layout = html.Div([
                 html.H3("Monthly distribution of accident types", style={'textAlign': 'center'}),
                 html.P("This stacked bar chart shows the monthly distribution of road accidents by type. You can toggle between day and night. You can also deselect types by clicking on a category in the legend to hide or show it."),
                 dcc.Graph(figure=accident_severity_month(df))
-            ], style={'padding': '30px'})
-        ]),
-        dcc.Tab(label='Severity over time', children=[
-            html.Div([
-                html.H3("Frequency breakdown", style={'textAlign': 'center'}),
-                html.P("This interactive dashboard visualizes how the frequency of road accidents varies over time. You can toggle between monthly, weekly, and hourly views. Additionally, you can show or hide specific accidents types by clicking on categories in the legend."),
-                dcc.Graph(figure=generate_accident_severity_bar_chart(df))
             ], style={'padding': '30px'})
         ]),
         dcc.Tab(label='Severe accidents heatmap', children=[
