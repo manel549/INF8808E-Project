@@ -2,13 +2,8 @@ from dash import html, dcc, callback, Output, Input
 import pandas as pd
 from data import get_dataframe
 
-
-
 COLUMNS = "CD_ETAT_SURFC, GRAVITE,MS_ACCDN "
-df= get_dataframe("data", cols=COLUMNS)
-
-
-
+df = get_dataframe("data", cols=COLUMNS)
 
 # Chargement et préparation des données
 df['MS_ACCDN'] = df['MS_ACCDN'].astype(int)
@@ -17,7 +12,7 @@ df['Gravité'] = df['GRAVITE'].apply(lambda x: 'Grave' if x == 'Mortel ou grave'
 def get_kpis(data):
     total_accidents = len(data)
     severe_accidents = len(data[data['Gravité'] == 'Grave'])
-    
+
     surface_mode_code = data['CD_ETAT_SURFC'].mode()
     if len(surface_mode_code) > 0:
         surface_code = surface_mode_code.iloc[0]
@@ -30,11 +25,9 @@ def get_kpis(data):
     else:
         surface_label = "Unknown"
 
-    
     return total_accidents, severe_accidents, surface_label
 
 total_acc, severe_acc, common_surface = get_kpis(df)
-
 layout = html.Div([
     html.H1(
         "Quebec road accidents insights",
@@ -68,7 +61,13 @@ layout = html.Div([
     ]),
 
     html.Div([
-        html.H2("Key statistics", style={'textAlign': 'center', 'fontSize': '34px','marginBottom': '30px','margintop': '30px', 'color': '#2c3e50'}),
+        html.H2("Key statistics", style={
+            'textAlign': 'center',
+            'fontSize': '34px',
+            'marginBottom': '30px',
+            'marginTop': '30px',
+            'color': '#2c3e50'
+        }),
 
         html.Div([
             html.Div([
@@ -113,4 +112,134 @@ layout = html.Div([
             'gap': '30px'
         }),
     ]),
+
+    # --- Section Équipe ---
+    html.Div([
+        html.Div([
+            html.H2("Our Team", style={
+                'fontSize': '30px',
+                'marginTop': '60px',
+                'marginBottom': '30px',
+                'color': '#2c3e50',
+                'fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                'textAlign': 'center',
+                
+            }),
+
+            html.Div([
+                html.Div([
+                    html.Div("Manel Ben Jemaa", style={
+                        'fontSize': '20px',
+                        'color': '#2C3E50',
+                        'fontWeight': 'bold',
+                    }),
+                    html.Div("1871842", style={
+                        'fontSize': '16px',
+                        'color': '#7f8c8d',
+                        'marginLeft': '15px',
+                    }),
+                ], style={
+                    'display': 'flex',
+                    'justifyContent': 'flex-end',
+                    'gap': '15px',
+                }),
+
+                html.Div([
+                    html.Div("Bejaoui Mayssa", style={
+                        'fontSize': '20px',
+                        'color': '#2C3E50',
+                        'fontWeight': 'bold',
+                    }),
+                    html.Div("2416858", style={
+                        'fontSize': '16px',
+                        'color': '#7f8c8d',
+                        'marginLeft': '15px',
+                    }),
+                ], style={
+                    'display': 'flex',
+                    'justifyContent': 'flex-end',
+                    'gap': '15px',
+                }),
+
+                html.Div([
+                    html.Div("Berbere Rihem", style={
+                        'fontSize': '20px',
+                        'color': '#2C3E50',
+                        'fontWeight': 'bold',
+                    }),
+                    html.Div("2409096", style={
+                        'fontSize': '16px',
+                        'color': '#7f8c8d',
+                        'marginLeft': '15px',
+                    }),
+                ], style={
+                    'display': 'flex',
+                    'justifyContent': 'flex-end',
+                    'gap': '15px',
+                }),
+
+                html.Div([
+                    html.Div("Oswald Jordane Nneme", style={
+                        'fontSize': '20px',
+                        'color': '#2C3E50',
+                        'fontWeight': 'bold',
+                    }),
+                    html.Div("1584966", style={
+                        'fontSize': '16px',
+                        'color': '#7f8c8d',
+                        'marginLeft': '15px',
+                    }),
+                ], style={
+                    'display': 'flex',
+                    'justifyContent': 'flex-end',
+                    'gap': '15px',
+                }),
+
+                html.Div([
+                    html.Div("Arnaud CHOUMELE", style={
+                        'fontSize': '20px',
+                        'color': '#2C3E50',
+                        'fontWeight': 'bold',
+                    }),
+                    html.Div("2348133", style={
+                        'fontSize': '16px',
+                        'color': '#7f8c8d',
+                        'marginLeft': '15px',
+                    }),
+                ], style={
+                    'display': 'flex',
+                    'justifyContent': 'flex-end',
+                    'gap': '15px',
+                }),
+
+                html.Div([
+                    html.Div("Vijeet Gahlawat", style={
+                        'fontSize': '20px',
+                        'color': '#2C3E50',
+                        'fontWeight': 'bold',
+                    }),
+                    html.Div("2353588", style={
+                        'fontSize': '16px',
+                        'color': '#7f8c8d',
+                        'marginLeft': '15px',
+                    }),
+                ], style={
+                    'display': 'flex',
+                    'justifyContent': 'flex-end',
+                    'gap': '15px',
+                }),
+            ], style={
+                'display': 'flex',
+                'flexDirection': 'column',
+                'alignItems': 'flex-end',
+                'gap': '20px',
+            }),
+
+        ], style={
+            'width': '320px',
+            'margin': '0 auto',
+        }),
+
+    ])
 ])
+

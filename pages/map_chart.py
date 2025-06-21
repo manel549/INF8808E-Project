@@ -68,7 +68,7 @@ def draw_geo_map(df_counts, center_lat=47.5, center_lon=-71.5, zoom=4.5):
         color='region',
         hover_name='region',
         hover_data={'nb_accidents': True, 'latitude': False, 'longitude': False},
-        title='Click on a region on the map to explore accident trends over time in the panel on the right',
+        title='Click a region on the map to display accident trends over time here.',
         custom_data=['region']
     )
 
