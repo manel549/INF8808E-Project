@@ -15,10 +15,10 @@ df= get_dataframe("data", cols=COLUMNS)
 
 # Préparation des colonnes
 df['GRAVITE'] = df['GRAVITE'].replace({
-    'Dommages matériels seulement': 'Matériels',
-    'Dommages matériels inférieurs au seuil de rapportage': 'Mineurs',
-    'Léger': 'Léger',
-    'Mortel ou grave': 'Grave'
+    'Dommages matériels seulement': 'Materials',
+    'Dommages matériels inférieurs au seuil de rapportage': 'Minors',
+    'Léger': 'Light',
+    'Mortel ou grave': 'Severe'
 })
 
 # Mappings
@@ -285,7 +285,7 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
         fig = px.histogram(dff, x='CD_COND_METEO', color='GRAVITE',
                           barmode='group', 
                           title=f"Accidents by Weather Conditions - {annee}",
-                          labels={'CD_COND_METEO': 'Weather Condition', 'count': 'Number of Accidents'})
+                          labels={'CD_COND_METEO': 'Weather Condition', 'count': 'Number of Accidents', 'GRAVITE':'Gravity'})
         
     elif selected == 'surface':
         fig = px.histogram(dff, x='CD_ETAT_SURFC', color='GRAVITE',
@@ -452,7 +452,9 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
                 len=0.5,
                 yanchor="middle",
                 y=0.5
-            )
+            ),
+            legend_title_text='Gravity',
+            showlegend=False 
         )
 
         map_fig.update_traces(
