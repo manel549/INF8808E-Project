@@ -1,5 +1,3 @@
-# spatial_temporel.py
-
 
 from dash import Dash, dcc, html, callback, Output, Input
 import pandas as pd
@@ -54,7 +52,7 @@ def init_app_layout(fig_bar, fig_map):
 
             html.Div(style={'flex': '1', 'minWidth': '400px'}, children=[
 
-                html.H2("Accidents by Region", style={'textAlign': 'left','fontSize': '25px', 'marginBottom': '20px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
+                html.H2("Accidents by region", style={'textAlign': 'left','fontSize': '25px', 'marginBottom': '20px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
                 dcc.Graph(
                     figure=fig_map,
                     id='accident-map',
@@ -98,10 +96,10 @@ def init_app_layout(fig_bar, fig_map):
         ]),
 
         html.Div(style={'width': '100%'}, children=[
-            html.H3("Accidents by Time and Severity (Global)", style={'textAlign': 'left','fontSize': '25px', 'marginBottom': '20px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
+            html.H3("Accidents by time and type (Global)", style={'textAlign': 'left','fontSize': '25px', 'marginBottom': '20px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
 
             html.Div(style={'display': 'flex', 'alignItems': 'center', 'gap': '10px', 'marginBottom': '20px'}, children=[
-                html.Label("Select Time Granularity:", style={'textAlign': 'left','fontSize': '20px', 'marginBottom': '20px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
+                html.Label("Select time granularity:", style={'textAlign': 'left','fontSize': '20px', 'marginBottom': '20px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
                 dcc.Dropdown(
                     id='granularity-selector',
                     options=[
@@ -165,7 +163,6 @@ def update_region_bar_chart(region_clicked, granularity):
 
         df['JR_SEMN_ACCDN'] = df['JR_SEMN_ACCDN'].replace({'SEM': 'Weekday', 'FDS': 'Weekend'})
 
-        # Pas besoin de filtrer ici, c'est fait dans draw()
         fig = bar_chart_region.init_figure(f"Accidents in {region_clicked}")
         fig = bar_chart.draw(fig, df, mode='count', type_col='GRAVITE', granularity=granularity.lower())
 

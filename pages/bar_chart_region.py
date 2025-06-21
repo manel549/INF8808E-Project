@@ -4,10 +4,10 @@ import plotly.io as pio
 import pandas as pd
 
 GRAVITE_TRANSLATION = {
-    'Mortel ou grave': 'Fatal or Serious',
+    'Mortel ou grave': 'Severe',
     'Léger': 'Minor',
-    'Dommages matériels seulement': 'Property Damage Only',
-    'Dommages matériels inférieurs au seuil de rapportage': 'Below Reporting Threshold'
+    'Dommages matériels seulement': 'Material damage',
+    'Dommages matériels inférieurs au seuil de rapportage': 'Low damage'
 }
 
 def get_aggregated_counts(df, region=None, granularity='year', type_col='GRAVITE'):
@@ -45,13 +45,13 @@ def init_figure(title='Accident frequency in Quebec'):
 
 def draw(fig, data, mode, type_col='GRAVITE', granularity='AN', region=None):
     COLOR_PALETTE = {
-        'Fatal or Serious': "#8B0000",    # Dark Red (intense, grave)
-        'Minor': "#CD5C5C",               # Indian Red (modéré)
-        'Property Damage Only': "#FA8072",# Salmon (léger)
-        'Below Reporting Threshold': "#F4A6A6"  # Light Red/Pink (très faible)
+        'Severe': "#8B0000",    
+        'Minor': "#CD5C5C",               
+        'Material damage': "#FA8072",
+        'Low damage': "#F4A6A6"  
     }
 
-    ordered_types = ['Fatal or Serious', 'Minor', 'Property Damage Only', 'Below Reporting Threshold']
+    ordered_types = ['Severe', 'Minor', 'Material damage', 'Low damage']
 
     fig = go.Figure(fig)
     fig.data = []

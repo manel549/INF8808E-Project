@@ -9,8 +9,6 @@ pio.renderers.default = 'browser'
 from data import get_dataframe
 
 
-# Aggregate data
-
 COLUMNS = "CD_CATEG_ROUTE, CD_CONFG_ROUTE, GRAVITE"
 df = get_dataframe("data", cols=COLUMNS)
 df.columns = df.columns.str.strip().str.replace('"', '')
@@ -19,14 +17,11 @@ df = df.rename(columns=lambda x: x.strip())
 route_severity = df.groupby(['CD_CATEG_ROUTE', 'GRAVITE']).size().reset_index(name='Count')
 config_severity = df.groupby(['CD_CONFG_ROUTE', 'GRAVITE']).size().reset_index(name='Count')
 
-# Ensure that severity_order includes all unique values from the 'GRAVITE' column
 severity_order = df['GRAVITE'].unique().tolist()
 
 
-# Create a figure 
 fig = go.Figure()
 
-# Add traces for road categories (visible by default)
 for severity in severity_order:
     filtered = route_severity[route_severity['GRAVITE'] == severity]
     fig.add_trace(go.Bar(
@@ -36,7 +31,6 @@ for severity in severity_order:
         visible=True
     ))
 
-# Add traces for road configuration (invisible by default)
 for severity in severity_order:
     filtered = config_severity[config_severity['GRAVITE'] == severity]
     fig.add_trace(go.Bar(
@@ -46,74 +40,56 @@ for severity in severity_order:
         visible=False
     ))
 
-# Total number of traces for each severity group
 n_severity = len(severity_order)
 
 
-# Prepare nodes and links for Sankey
 road_categories = list(df['CD_CATEG_ROUTE'].unique())
 road_configs = list(df['CD_CONFG_ROUTE'].unique())
 severities = severity_order
 
-# Create nodes list for Sankey (all unique labels)
 nodes = road_categories + road_configs + severities
 
-# Map label to index (ensure all labels are accounted for)
 label_to_index = {label: i for i, label in enumerate(nodes)}
 
-# Aggregate flows: from road category to severity
 flows_cat_sev = df.groupby(['CD_CATEG_ROUTE', 'GRAVITE']).size().reset_index(name='count')
 
-# Aggregate flows: from road config to severity
 flows_conf_sev = df.groupby(['CD_CONFG_ROUTE', 'GRAVITE']).size().reset_index(name='count')
 
-# Build source, target, value lists
 source = []
 target = []
 value = []
 
-# plotting.py
 
 def create_sankey_chart(df):
-    # Prepare nodes and links for Sankey
     road_categories = list(df['CD_CATEG_ROUTE'].unique())
     road_configs = list(df['CD_CONFG_ROUTE'].unique())
     severities = df['GRAVITE'].unique().tolist()
 
-    # Create nodes list for Sankey (all unique labels)
     nodes = road_categories + road_configs + severities
 
-    # Map label to index (ensure all labels are accounted for)
     label_to_index = {label: i for i, label in enumerate(nodes)}
 
-    # Aggregate flows: from road category to severity
     flows_cat_sev = df.groupby(['CD_CATEG_ROUTE', 'GRAVITE']).size().reset_index(name='count')
 
-    # Aggregate flows: from road config to severity
     flows_conf_sev = df.groupby(['CD_CONFG_ROUTE', 'GRAVITE']).size().reset_index(name='count')
 
-    # Build source, target, value lists
     source = []
     target = []
     value = []
 
-    # Road category → severity
     for _, row in flows_cat_sev.iterrows():
         source.append(label_to_index[row['CD_CATEG_ROUTE']])
         target.append(label_to_index[row['GRAVITE']])
         value.append(row['count'])
 
-    # Road config → severity (shift indices by len(road_categories))
     offset = len(road_categories)
     for _, row in flows_conf_sev.iterrows():
         source.append(offset + road_configs.index(row['CD_CONFG_ROUTE']))
         target.append(label_to_index[row['GRAVITE']])
         value.append(row['count'])
 
-    # Create Sankey diagram figure
     fig_sankey = go.Figure()
 
-    # Trace 1: Road Category to Severity (first half)
     fig_sankey.add_trace(go.Sankey(
         node=dict(label=nodes, pad=15, thickness=20),
         link=dict(source=source[:len(flows_cat_sev)],
@@ -124,7 +100,6 @@ def create_sankey_chart(df):
         name='Road Category to Severity'
     ))
 
-    # Trace 2: Road Config to Severity (second half)
     fig_sankey.add_trace(go.Sankey(
         node=dict(label=nodes, pad=15, thickness=20),
         link=dict(source=source[len(flows_cat_sev):],
@@ -136,10 +111,10 @@ def create_sankey_chart(df):
     ))
 
     buttons = [
-        dict(label="Road Category   ",
+        dict(label="Road Category",
              method="update",
              args=[{"visible": [True, False]}, {"title": "Accident Severity: Road Category → Severity"}]),
-        dict(label="   Road Configuration",
+        dict(label="Road Configuration",
              method="update",
              args=[{"visible": [False, True]}, {"title": "Accident Severity: Road Configuration → Severity"}])
     ]

@@ -13,15 +13,13 @@ COLUMNS = "CD_COND_METEO,CD_ECLRM , GRAVITE, CD_ETAT_SURFC, CD_ENVRN_ACCDN, REG_
 df= get_dataframe("data", cols=COLUMNS)
 
 
-# Préparation des colonnes
 df['GRAVITE'] = df['GRAVITE'].replace({
-    'Dommages matériels seulement': 'Materials',
-    'Dommages matériels inférieurs au seuil de rapportage': 'Minors',
-    'Léger': 'Light',
+    'Dommages matériels seulement': 'Material damage',
+    'Dommages matériels inférieurs au seuil de rapportage': 'Minor',
+    'Léger': 'Low damage',
     'Mortel ou grave': 'Severe'
 })
 
-# Mappings
 weather_mapping = {11: 'Clear', 12: 'Overcast', 13: 'Fog/Mist', 14: 'Rain/Drizzle', 15: 'Heavy Rain',
                    16: 'Strong Wind', 17: 'Snow/Hail', 18: 'Blowing Snow/Storm',
                    19: 'Freezing Rain', 99: 'Other'}
@@ -37,7 +35,6 @@ df['CD_ETAT_SURFC'] = df['CD_ETAT_SURFC'].map(surface_mapping)
 df['Lighting_Label'] = df['CD_ECLRM'].map(lighting_mapping)
 df['Environment_Label'] = df['CD_ENVRN_ACCDN'].map(env_mapping)
 
-# Régions pour carte
 df['Region'] = df['REG_ADM'].str.strip()
 
 region_coords = {
@@ -64,10 +61,8 @@ df['lon'] = df['REG_ADM'].map(lambda x: region_coords.get(x.strip(), (None, None
 
 
 
-# Dropdown options
 gravite_options = [{'label': g, 'value': g} for g in df['GRAVITE'].unique()]
 
-# Layout principal
 layout = html.Div([
     html.H1("Environmental impact on road accidents in Quebec ", className='text-center pb-3', style={
         'textAlign': 'center',
@@ -117,7 +112,6 @@ layout = html.Div([
         html.P("Combined risk factors (e.g., icy roads during fog) are highlighted through heatmaps."),
     ], open=False)
     ], style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
-    # Dropdown principal (visualisation)
     dbc.Row([
         dbc.Col([
             html.Div([
@@ -140,7 +134,6 @@ layout = html.Div([
         ])
     ]),
 
-    # Filtres secondaires
     dbc.Row([
         dbc.Col([dcc.Dropdown(id='filter-gravite', options=gravite_options, placeholder="Severity")], width=2),
         dbc.Col([dcc.Dropdown(id='filter-meteo', placeholder="Weather")], width=2),
@@ -150,13 +143,11 @@ layout = html.Div([
         dbc.Col([dcc.Dropdown(id='filter-const', placeholder="Construction Zone")], width=2),
     ], className='mb-4'),
 
-    # Section graphique + carte
     dbc.Row([
         dbc.Col([html.Div(id='main-graph')], width=7),
         dbc.Col([html.Div(id='map-container')], width=5),
     ]),
 
-    # Slider année
     dbc.Row([
     dbc.Col([
         html.Label("Filter by Year", style={"fontWeight": "bold", "fontSize": "18px", "marginBottom": "10px"}),
@@ -236,7 +227,7 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
 
 
     if selected == 'covid':
-        dff = df.copy()  # Keep all years for COVID analysis
+        dff = df.copy()  
     else:
         dff = df[df['AN'] == annee]
 
@@ -280,17 +271,16 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
 
 
 
-    # Create main graph based on selection
     if selected == 'weather':
         fig = px.histogram(dff, x='CD_COND_METEO', color='GRAVITE',
                           barmode='group', 
-                          title=f"Accidents by Weather Conditions - {annee}",
-                          labels={'CD_COND_METEO': 'Weather Condition', 'count': 'Number of Accidents', 'GRAVITE':'Gravity'})
+                          title=f"Accidents by weather conditions - {annee}",
+                          labels={'CD_COND_METEO': 'Weather Condition', 'Count': 'Number of Accidents', 'GRAVITE':'Gravity'})
         
     elif selected == 'surface':
         fig = px.histogram(dff, x='CD_ETAT_SURFC', color='GRAVITE',
                           barmode='group',
-                          title=f"Accidents by Road Surface - {annee}",
+                          title=f"Accidents by road surface - {annee}",
                           labels={'CD_ETAT_SURFC': 'Road Surface Condition'})
         
     elif selected == 'lighting':
@@ -307,14 +297,14 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
     elif selected == 'defects':
         fig = px.histogram(dff, x='CD_ASPCT_ROUTE', color='GRAVITE',
                           barmode='group',
-                          title=f"Accidents by Road Defects - {annee}",
+                          title=f"Accidents by road defects - {annee}",
                           labels={'CD_ASPCT_ROUTE': 'Road Defect Type'})
         
     elif selected == 'construction':
         fig = px.histogram(dff, x='CD_ZON_TRAVX_ROUTR', color='GRAVITE',
                           barmode='group',
-                          title=f"Accidents in Construction Zones - {annee}",
-                          labels={'CD_ZON_TRAVX_ROUTR': 'Construction Zone Presence'})
+                          title=f"Accidents in construction zones - {annee}",
+                          labels={'CD_ZON_TRAVX_ROUTR': 'Construction zone presence'})
         
     elif selected == 'heatmap':
         
@@ -322,13 +312,12 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
             dff[dff['GRAVITE'] == 'Grave'], 
             x='CD_COND_METEO', 
             y='CD_ETAT_SURFC',
-            title=f"Severe Accidents: Weather vs Road Surface - {annee}",
+            title=f"Severe accidents: Weather vs Road Surface - {annee}",
             labels={'CD_COND_METEO': 'Weather', 'CD_ETAT_SURFC': 'Road Surface'},
             color_continuous_scale='Reds'
         )
             
     elif selected == 'covid':
-        # Ne pas filtrer par année pour garder toutes les données historiques
         covid_data = dff.groupby('AN').agg(
             Total=('AN', 'size'),
             Severe=('GRAVITE', lambda x: (x == 'Grave').sum())
@@ -336,7 +325,6 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
         
         fig = go.Figure()
         
-        # Total accidents line
         fig.add_trace(go.Scatter(
             x=covid_data['AN'],
             y=covid_data['Total'],
@@ -345,7 +333,6 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
             line=dict(color='blue', width=2)
         ))
         
-        # Severe accidents line
         fig.add_trace(go.Scatter(
             x=covid_data['AN'],
             y=covid_data['Severe'],
@@ -354,7 +341,6 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
             line=dict(color='red', width=2)
         ))
         
-        # Mettre à jour la ligne verticale dynamiquement
         fig.add_vline(
             x=annee, 
             line_width=3, 
@@ -364,7 +350,6 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
             annotation_position="top right"
         )
         
-        # COVID period shading
         fig.add_vrect(
             x0=2020, x1=covid_data['AN'].max(),
             fillcolor="lightgray", opacity=0.2,
@@ -382,11 +367,9 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
     else:
         fig = go.Figure()
 
-        # Copie des données filtrées
         
     map_df = dff.copy()
 
-    # Calcul des statistiques par région
     region_stats = map_df.groupby('Region').agg(
         Total_Accidents=('GRAVITE', 'count'),
         Materiels=('GRAVITE', lambda x: (x == 'Matériels').sum()), 
@@ -397,7 +380,6 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
         lon=('lon', 'first')
     ).reset_index()
 
-    # Calcul des taux
     region_stats['Materiels'] = pd.to_numeric(region_stats['Materiels'], errors='coerce').fillna(0)
     region_stats['Total_Accidents'] = pd.to_numeric(region_stats['Total_Accidents'], errors='coerce').fillna(0)
     region_stats['Graves'] = pd.to_numeric(region_stats['Graves'], errors='coerce').fillna(0)
@@ -453,7 +435,7 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
                 yanchor="middle",
                 y=0.5
             ),
-            legend_title_text='Gravity',
+            legend_title_text='Accident type',
             showlegend=False 
         )
 

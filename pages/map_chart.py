@@ -26,21 +26,11 @@ REGION_COORDS = {
 
 
 def prepare_region_data(df):
-    '''
-    Prépare les données agrégées par région pour la carte à partir de la base Supabase.
-
-    Returns:
-        pd.DataFrame: données prêtes avec lat/lon/nb_accidents
-    '''
-
     if df is None or df.empty:
-        print("Aucune donnée disponible depuis Supabase.")
         return pd.DataFrame(columns=['region', 'nb_accidents', 'latitude', 'longitude'])
 
-    # Nettoyage des colonnes si nécessaire
     df.columns = df.columns.str.strip().str.replace('"', '').str.replace("'", '').str.replace('\t', '')
 
-    # Identifier la bonne colonne
     if 'REG_ADM' not in df.columns:
         for col in df.columns:
             if 'REG_ADM' in col:
@@ -52,7 +42,6 @@ def prepare_region_data(df):
     df_counts = df['region'].value_counts().reset_index()
     df_counts.columns = ['region', 'nb_accidents']
 
-    # Ajouter les coordonnées depuis le dictionnaire
     df_counts['latitude'] = df_counts['region'].map(lambda r: REGION_COORDS.get(r, (None, None))[0])
     df_counts['longitude'] = df_counts['region'].map(lambda r: REGION_COORDS.get(r, (None, None))[1])
 

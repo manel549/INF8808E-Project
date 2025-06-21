@@ -5,7 +5,6 @@ from data import get_dataframe
 COLUMNS = "CD_ETAT_SURFC, GRAVITE,MS_ACCDN "
 df = get_dataframe("data", cols=COLUMNS)
 
-# Chargement et préparation des données
 df['MS_ACCDN'] = df['MS_ACCDN'].astype(int)
 df['Gravité'] = df['GRAVITE'].apply(lambda x: 'Grave' if x == 'Mortel ou grave' else 'Autre')
 
@@ -116,7 +115,7 @@ layout = html.Div([
     # --- Section Équipe ---
     html.Div([
         html.Div([
-            html.H2("Our Team", style={
+            html.H2("Our team", style={
                 'fontSize': '30px',
                 'marginTop': '60px',
                 'marginBottom': '30px',
@@ -196,7 +195,7 @@ layout = html.Div([
                 }),
 
                 html.Div([
-                    html.Div("Arnaud CHOUMELE", style={
+                    html.Div("Arnaud Choumele", style={
                         'fontSize': '20px',
                         'color': '#2C3E50',
                         'fontWeight': 'bold',
