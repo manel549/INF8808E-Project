@@ -164,9 +164,18 @@ def update_region_bar_chart(region_clicked, granularity):
             return bar_chart.init_figure("Aucune donnée")
 
         df['JR_SEMN_ACCDN'] = df['JR_SEMN_ACCDN'].replace({'SEM': 'Weekday', 'FDS': 'Weekend'})
+        
+        region_clicked_clean = region_clicked.strip().upper()
+
+        # Nettoyage de REG_ADM pour enlever les codes entre parenthèses
+        df['REG_ADM'] = df['REG_ADM'].str.replace(r'\s*\(\d+\)', '', regex=True).str.strip().str.upper()
+
+        # Filtrage
+        df = df[df['REG_ADM'] == region_clicked_clean]
+
 
         # Pas besoin de filtrer ici, c'est fait dans draw()
-        fig = bar_chart_region.init_figure(f"Accidents in {region_clicked}")
+        fig = bar_chart_region.init_figure(f"Accidents in {region_clicked_clean}")
         fig = bar_chart.draw(fig, df, mode='count', type_col='GRAVITE', granularity=granularity.lower())
 
 
