@@ -26,7 +26,7 @@
 }
 
 .sidebar-link:hover {
-    background-color: #d1b884 !important;
+    background-color: #FCDFA2 !important;
     color: #FFF1CA !important;
 }
 
@@ -43,21 +43,21 @@
     margin-bottom: 2rem;
 }
 .custom-slider .rc-slider-rail {
-    background-color: #e0dee6; 
+    background-color: #E0DEE6; 
     height: 8px;
 }
 
 .custom-slider .rc-slider-track {
-    background-color: #1842cc; 
+    background-color: #1842CC; 
     height: 8px;
 }
 
 .custom-slider .rc-slider-handle {
-    border: solid 2px #1842cc;
+    border: solid 2px #1842CC;
     height: 24px;
     width: 24px;
     margin-top: -8px;
-    background-color:#1842cc;
+    background-color:#1842CC;
 }
 
 .custom-slider .rc-slider-handle:hover {
