@@ -2,14 +2,10 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 import pandas as pd
+from template import COLOR_PALETTE,GRAVITY_TRANSLATION
 
 
-GRAVITE_TRANSLATION = {
-    'Mortel ou grave': 'Fatal or Serious',
-    'Léger': 'Minor',
-    'Dommages matériels seulement': 'Property Damage Only',
-    'Dommages matériels inférieurs au seuil de rapportage': 'Below Reporting Threshold'
-}
+
 
 def get_counts_by_type_and_time(df, time_col='AN', type_col='GRAVITE'):
     '''
@@ -26,7 +22,7 @@ def get_counts_by_type_and_time(df, time_col='AN', type_col='GRAVITE'):
 
 
     # Traduire les types d'accidents
-    df[type_col] = df[type_col].map(GRAVITE_TRANSLATION)
+    df[type_col] = df[type_col].map(GRAVITY_TRANSLATION)
 
     grouped = df.groupby([time_col, type_col]).size().reset_index(name='count')
     grouped.columns = [time_col, type_col, 'count']
@@ -43,12 +39,10 @@ def init_figure(title='Accident Frequency in Quebec'):
     '''
     fig = go.Figure()
 
-    # TODO : Update the template to include our new theme and set the title
-
     fig.update_layout(
         template=pio.templates['simple_white'],
         dragmode=False,
-        barmode='stack',  # important : pour affichage empilé
+        barmode='stack',
         title=title,
         xaxis_title='Year',
         yaxis_title='',
@@ -61,7 +55,7 @@ def init_figure(title='Accident Frequency in Quebec'):
 
 def get_aggregated_counts(df, granularity='year', type_col='GRAVITE'):
     df = df.copy()
-    df[type_col] = df[type_col].map(GRAVITE_TRANSLATION)
+    df[type_col] = df[type_col].map(GRAVITY_TRANSLATION)
 
     if granularity == 'year':
         df['time_unit'] = df['AN'].astype(str)
@@ -78,19 +72,15 @@ def get_aggregated_counts(df, granularity='year', type_col='GRAVITE'):
     return grouped
 
 def draw(fig, data, mode, type_col='GRAVITE', granularity='year'):
-    COLOR_PALETTE = {
-        'Fatal or Serious': "#8B0000",    # Dark Red (intense, grave)
-        'Minor': "#CD5C5C",               # Indian Red (modéré)
-        'Property Damage Only': "#FA8072",# Salmon (léger)
-        'Below Reporting Threshold': "#F4A6A6"  # Light Red/Pink (très faible)
-    }
 
-    ordered_types = ['Fatal or Serious', 'Minor', 'Property Damage Only', 'Below Reporting Threshold']
+
+    ordered_types = ['Severe', 'Minors', 'Materials damage', 'Low damage']
 
     fig = go.Figure(fig)
     fig.data = []
 
     grouped = get_aggregated_counts(data, granularity=granularity, type_col=type_col)
+    grouped[type_col] = grouped[type_col].replace(GRAVITY_TRANSLATION)
 
     if mode == 'percent':
         total_per_time = grouped.groupby('time_unit')['count'].transform('sum')

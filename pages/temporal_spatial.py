@@ -7,7 +7,6 @@ from dash.dependencies import Input, Output
 from pages import map_chart
 from pages import bar_chart
 from pages import bar_chart_region
-from pages.template import create_template
 
 from data import get_dataframe
 
@@ -125,7 +124,6 @@ def init_app_layout(fig_bar, fig_map):
         ])
     ])
 
-create_template()
 COLUMNS = "REG_ADM, JR_SEMN_ACCDN, GRAVITE, AN"
 df_global = get_dataframe("data", cols=COLUMNS)
 

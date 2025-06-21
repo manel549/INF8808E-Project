@@ -4,6 +4,7 @@ from dash import html, dcc, Output, Input
 from data import get_dataframe
 import pandas as pd
 import plotly.graph_objects as go
+from template import COLOR_PALETTE, GRAVITY_TRANSLATION
 
 pd.set_option('future.no_silent_downcasting', True)
 
@@ -92,17 +93,12 @@ def accidents_by_user_type_day_night(df):
     )
     return fig
 
-# Function to create bar chart for Severity by Month
+
 def accident_severity_month(df):
-    gravite_map = {
-        "Léger": "Minor",
-        "Mortel ou grave": "Severe",
-        "Dommages matériels seulement": "Material damage",
-        "Dommages matériels inférieurs au seuil de rapportage": "Low damage"
-    }
+   
 
     df_clean = df.copy()
-    df_clean['GRAVITE'] = df_clean['GRAVITE'].map(gravite_map)
+    df_clean['GRAVITE'] = df_clean['GRAVITE'].map(GRAVITY_TRANSLATION)
     df_clean['MS_ACCDN'] = pd.to_numeric(df_clean['MS_ACCDN'], errors='coerce').astype("Int64")
 
     # Define DAY/NIGHT based on HR_ACCDN
@@ -127,13 +123,6 @@ def accident_severity_month(df):
 
     fig = go.Figure()
 
-    # Set colors
-    color_map = {
-        "Severe": "darkred",
-        "Minor": "lightgreen",
-        "Material damage": "steelblue",
-        "Low damage": "lightgrey"
-    }
 
     # Add traces for Day and Night
     for grav in grouped['GRAVITE'].unique():
@@ -141,7 +130,7 @@ def accident_severity_month(df):
         counts = df_day.set_index('MS_ACCDN').reindex(range(1, 13), fill_value=0)['Count']
         fig.add_trace(go.Bar(
             x=month_labels, y=counts, name=grav,
-            marker_color=color_map.get(grav, 'gray'),
+            marker_color=COLOR_PALETTE.get(grav, 'gray'),
             visible=True
         ))
 
@@ -150,7 +139,7 @@ def accident_severity_month(df):
         counts = df_night.set_index('MS_ACCDN').reindex(range(1, 13), fill_value=0)['Count']
         fig.add_trace(go.Bar(
             x=month_labels, y=counts, name=grav,
-            marker_color=color_map.get(grav, 'gray'),
+            marker_color=COLOR_PALETTE.get(grav, 'gray'),
             visible=False
         ))
 
@@ -214,7 +203,6 @@ def generate_severe_accidents_heatmap(df):
     # Réordonner
     pivot = pivot[sorted(pivot.columns)]
 
-    # Noms formatés pour x et y
     x_labels = [month_map[m] for m in pivot.columns]
     y_labels = pivot.index.tolist()
     z_values = pivot.values

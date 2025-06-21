@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
+from template import GRAVITY_TRANSLATION
 
 from data import get_dataframe
 
@@ -14,12 +15,7 @@ df= get_dataframe("data", cols=COLUMNS)
 
 
 # Préparation des colonnes
-df['GRAVITE'] = df['GRAVITE'].replace({
-    'Dommages matériels seulement': 'Materials',
-    'Dommages matériels inférieurs au seuil de rapportage': 'Minors',
-    'Léger': 'Light',
-    'Mortel ou grave': 'Severe'
-})
+df['GRAVITE'] = df['GRAVITE'].map(GRAVITY_TRANSLATION)
 
 # Mappings
 weather_mapping = {11: 'Clear', 12: 'Overcast', 13: 'Fog/Mist', 14: 'Rain/Drizzle', 15: 'Heavy Rain',
@@ -117,7 +113,7 @@ layout = html.Div([
         html.P("Combined risk factors (e.g., icy roads during fog) are highlighted through heatmaps."),
     ], open=False)
     ], style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
-    # Dropdown principal (visualisation)
+    # Dropdown principal
     dbc.Row([
         dbc.Col([
             html.Div([
@@ -140,7 +136,7 @@ layout = html.Div([
         ])
     ]),
 
-    # Filtres secondaires
+    # Filtres
     dbc.Row([
         dbc.Col([dcc.Dropdown(id='filter-gravite', options=gravite_options, placeholder="Severity")], width=2),
         dbc.Col([dcc.Dropdown(id='filter-meteo', placeholder="Weather")], width=2),
@@ -234,7 +230,6 @@ def update_filter_options(annee, gravite):
 )
 def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
 
-
     if selected == 'covid':
         dff = df.copy()  # Keep all years for COVID analysis
     else:
@@ -285,41 +280,57 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
         fig = px.histogram(dff, x='CD_COND_METEO', color='GRAVITE',
                           barmode='group', 
                           title=f"Accidents by Weather Conditions - {annee}",
-                          labels={'CD_COND_METEO': 'Weather Condition', 'count': 'Number of Accidents', 'GRAVITE':'Gravity'})
+                           labels={
+                                'CD_COND_METEO': 'Weather Condition', 
+                                'GRAVITE': 'Gravity',
+                                'count': 'Accidents Frequency' })
+        fig.update_layout(yaxis_title='Accidents Frequency')
+
         
     elif selected == 'surface':
         fig = px.histogram(dff, x='CD_ETAT_SURFC', color='GRAVITE',
                           barmode='group',
                           title=f"Accidents by Road Surface - {annee}",
                           labels={'CD_ETAT_SURFC': 'Road Surface Condition'})
+        fig.update_layout(yaxis_title='Accidents Frequency')
+
         
     elif selected == 'lighting':
         fig = px.histogram(dff, x='Lighting_Label', color='GRAVITE',
                           barmode='group',
                           title=f"Accidents by Lighting Conditions - {annee}",
                           labels={'Lighting_Label': 'Lighting Condition'})
+        fig.update_layout(yaxis_title='Accidents Frequency')
+
         
     elif selected == 'environment':
         fig = px.histogram(dff, x='Environment_Label', color='GRAVITE',
                           title=f"Accidents by Environment - {annee}",
                           labels={'Environment_Label': 'Environment Type'})
+        fig.update_layout(yaxis_title='Accidents Frequency')
+
         
     elif selected == 'defects':
         fig = px.histogram(dff, x='CD_ASPCT_ROUTE', color='GRAVITE',
                           barmode='group',
                           title=f"Accidents by Road Defects - {annee}",
                           labels={'CD_ASPCT_ROUTE': 'Road Defect Type'})
+        fig.update_layout(yaxis_title='Accidents Frequency')
+
         
     elif selected == 'construction':
         fig = px.histogram(dff, x='CD_ZON_TRAVX_ROUTR', color='GRAVITE',
                           barmode='group',
                           title=f"Accidents in Construction Zones - {annee}",
                           labels={'CD_ZON_TRAVX_ROUTR': 'Construction Zone Presence'})
+        fig.update_layout(yaxis_title='Accidents Frequency')
+
         
     elif selected == 'heatmap':
-        
+        df_heat = dff[dff['GRAVITE'].isin(['Grave', 'Mortel ou grave', 'Severe'])].copy()
+ 
         fig = px.density_heatmap(
-            dff[dff['GRAVITE'] == 'Grave'], 
+            df_heat, 
             x='CD_COND_METEO', 
             y='CD_ETAT_SURFC',
             title=f"Severe Accidents: Weather vs Road Surface - {annee}",
@@ -382,20 +393,20 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
     else:
         fig = go.Figure()
 
-        # Copie des données filtrées
         
     map_df = dff.copy()
 
     # Calcul des statistiques par région
     region_stats = map_df.groupby('Region').agg(
-        Total_Accidents=('GRAVITE', 'count'),
-        Materiels=('GRAVITE', lambda x: (x == 'Materials').sum()), 
-        Graves=('GRAVITE', lambda x: (x == 'Severe').sum()),
-        Legers=('GRAVITE', lambda x: (x == 'Light').sum()),
-        Mineurs=('GRAVITE', lambda x: (x == 'Minors').sum()),
-        lat=('lat', 'first'),
-        lon=('lon', 'first')
-    ).reset_index()
+    Total_Accidents=('GRAVITE', 'count'),
+    Materiels=('GRAVITE', lambda x: (x == 'Materials damage').sum()), 
+    Graves=('GRAVITE', lambda x: (x == 'Severe').sum()),
+    Legers=('GRAVITE', lambda x: (x == 'Low damage').sum()),
+    Mineurs=('GRAVITE', lambda x: (x == 'Minors').sum()),
+    lat=('lat', 'first'),
+    lon=('lon', 'first')
+).reset_index()
+
 
     # Calcul des taux
     region_stats['Materiels'] = pd.to_numeric(region_stats['Materiels'], errors='coerce').fillna(0)
