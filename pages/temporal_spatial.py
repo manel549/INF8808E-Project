@@ -163,6 +163,7 @@ def update_region_bar_chart(region_clicked, granularity):
 
         df['JR_SEMN_ACCDN'] = df['JR_SEMN_ACCDN'].replace({'SEM': 'Weekday', 'FDS': 'Weekend'})
 
+        # Pas besoin de filtrer ici, c'est fait dans draw()
         fig = bar_chart_region.init_figure(f"Accidents in {region_clicked}")
         fig = bar_chart.draw(fig, df, mode='count', type_col='GRAVITE', granularity=granularity.lower())
 

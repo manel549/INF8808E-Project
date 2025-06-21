@@ -372,10 +372,10 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
 
     region_stats = map_df.groupby('Region').agg(
         Total_Accidents=('GRAVITE', 'count'),
-        Materiels=('GRAVITE', lambda x: (x == 'Matériels').sum()), 
-        Graves=('GRAVITE', lambda x: (x == 'Grave').sum()),
-        Legers=('GRAVITE', lambda x: (x == 'Léger').sum()),
-        Mineurs=('GRAVITE', lambda x: (x == 'Mineurs').sum()),
+        Materiels=('GRAVITE', lambda x: (x == 'Materials').sum()), 
+        Graves=('GRAVITE', lambda x: (x == 'Severe').sum()),
+        Legers=('GRAVITE', lambda x: (x == 'Light').sum()),
+        Mineurs=('GRAVITE', lambda x: (x == 'Minors').sum()),
         lat=('lat', 'first'),
         lon=('lon', 'first')
     ).reset_index()
