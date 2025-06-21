@@ -69,29 +69,42 @@ gravite_options = [{'label': g, 'value': g} for g in df['GRAVITE'].unique()]
 
 # Layout principal
 layout = html.Div([
-    html.H1("Environmental impact on road accidents in Quebec ", className='text-center pb-3'),
+    html.H1("Environmental impact on road accidents in Quebec ", className='text-center pb-3', style={
+        'textAlign': 'center',
+        'marginTop': '30px',
+        'marginBottom': '30px',
+        'fontSize': '34px',
+        'fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        'color': '#2c3e50'
+    }),
 
     html.Div([
    
 
-        html.P("This interactive dashboard is designed to explore how environmental and contextual factors influence the severity and frequency of road accidents in Quebec."),
+        html.P("This interactive dashboard is designed to explore how environmental and contextual factors influence the severity and frequency of road accidents in Quebec.", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto','marginRight': '10px'}),
 
-        html.P("Using categorical variables such as weather conditions, road surface state, lighting, construction zones, and the impact of the COVID-19 pandemic, the dashboard offers dynamic visualizations to uncover meaningful patterns."),
+        html.P("Using categorical variables such as weather conditions, road surface state, lighting, construction zones, and the impact of the COVID-19 pandemic, the dashboard offers dynamic visualizations to uncover meaningful patterns.", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto','marginRight': '10px'}),
 
-        html.P("Each chart answers a targeted analytical question, helping to identify high-risk scenarios and support data-driven strategies for public safety and accident prevention."),
+        html.P("Each chart answers a targeted analytical question, helping to identify high-risk scenarios and support data-driven strategies for public safety and accident prevention.", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto','marginRight': '10px'}),
 
-        html.H3("Questions Explored:"),
+        html.H3("Questions Explored:", style={
+        'textAlign': 'left',
+        'marginTop': '30px',
+        'marginBottom': '10px',
+        'fontSize': '34px',
+        'fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        'color': '#2c3e50'}),
         html.Details([
-            html.Summary("Click to expand full description", style={"cursor": "pointer"}),
+            html.Summary("Click to expand full description", style={"cursor": "pointer",'marginBottom': '20px'}),
         html.Ul([
-            html.Li("How do weather and road conditions influence the severity of accidents?"),
-            html.Li("Are certain environmental conditions associated with higher accident rates?"),
-            html.Li("Do weather conditions affect accident severity?"),
-            html.Li("Do road surface conditions (snow, wet, dry) influence severity?"),
-            html.Li("Does lighting condition (day/night, lit or unlit) affect accident severity?"),
-            html.Li("Are certain types of road defects more strongly associated with severe accidents?"),
-            html.Li("Do more severe accidents occur in construction zones?"),
-            html.Li("How did the COVID-19 pandemic affect road accident patterns?"),
+            html.Li("How do weather and road conditions influence the severity of accidents?", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
+            html.Li("Are certain environmental conditions associated with higher accident rates?", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
+            html.Li("Do weather conditions affect accident severity?", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
+            html.Li("Do road surface conditions (snow, wet, dry) influence severity?", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
+            html.Li("Does lighting condition (day/night, lit or unlit) affect accident severity?", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
+            html.Li("Are certain types of road defects more strongly associated with severe accidents?", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
+            html.Li("Do more severe accidents occur in construction zones?", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
+            html.Li("How did the COVID-19 pandemic affect road accident patterns?", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
         ]),
 
         html.H3("Insights:"),
@@ -103,7 +116,7 @@ layout = html.Div([
         html.P("Construction zones show both high frequency and high severity."),
         html.P("Combined risk factors (e.g., icy roads during fog) are highlighted through heatmaps."),
     ], open=False)
-    ], style={'width': '80%', 'margin': '0 auto', 'marginBottom': '30px'}),
+    ], style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
     # Dropdown principal (visualisation)
     dbc.Row([
         dbc.Col([

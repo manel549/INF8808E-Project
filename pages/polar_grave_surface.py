@@ -30,9 +30,14 @@ lighting_labels = {1: "Daylight and clear", 2: "Daylight and twilight",
                    3: "Night and lit road", 4: "Night and unlit road"}
 seasons = sorted(df['SEASON'].dropna().unique().tolist())
 layout = html.Div([
-    html.H2("Seasonal Radar Visualization", className="text-center", style={"marginTop": "40px"}),
+    html.H2("Seasonal Radar Visualization", className="text-center", style={'textAlign': 'center',
+        'marginTop': '30px',
+        'marginBottom': '30px',
+        'fontSize': '34px',
+        'fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        'color': '#2c3e50'}),
 
-    html.P("This radar chart visualization explores how road surface and lighting conditions influence the severity of road accidents across different seasons."),
+    html.P("This radar chart visualization explores how road surface and lighting conditions influence the severity of road accidents across different seasons.", style={'textAlign': 'center','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto',}),
 
     html.Details([
         html.Summary("Click to expand full description", style={"cursor": "pointer"}),
