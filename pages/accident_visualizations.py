@@ -8,7 +8,6 @@ from template import COLOR_PALETTE, GRAVITY_TRANSLATION
 
 pd.set_option('future.no_silent_downcasting', True)
 
-# Function to create Bar chart for Accidents by User Type (Day vs Night)
 def accidents_by_user_type_day_night(df):
     usager_cols = {
         'IND_AUTO_CAMION_LEGER': 'Light vehicles',
@@ -26,7 +25,6 @@ def accidents_by_user_type_day_night(df):
 
 
 
-    # Define Day/Night based on HR_ACCDN
     def classify_period(hr):
         if pd.isna(hr):
             return 'Unknown'
@@ -48,7 +46,6 @@ def accidents_by_user_type_day_night(df):
 
     fig = go.Figure()
 
-    # Add traces for Day and Night
     fig.add_trace(go.Bar(
         x=data_by_period['Day'].index,
         y=data_by_period['Day'].values,
@@ -63,7 +60,6 @@ def accidents_by_user_type_day_night(df):
         visible=False
     ))
 
-    # Buttons for interactivity
     fig.update_layout(
         title="Number of accidents by road user type (Day vs Night)",
         xaxis_title="User type",
@@ -101,7 +97,6 @@ def accident_severity_month(df):
     df_clean['GRAVITE'] = df_clean['GRAVITE'].map(GRAVITY_TRANSLATION)
     df_clean['MS_ACCDN'] = pd.to_numeric(df_clean['MS_ACCDN'], errors='coerce').astype("Int64")
 
-    # Define DAY/NIGHT based on HR_ACCDN
     def classify_period(hr):
         if pd.isna(hr):
             return 'Unknown'
@@ -117,14 +112,12 @@ def accident_severity_month(df):
 
     grouped = df_clean.groupby(['DAY_NIGHT', 'MS_ACCDN', 'GRAVITE']).size().reset_index(name='Count')
 
-    # Month Labels
     month_labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
     fig = go.Figure()
 
 
-    # Add traces for Day and Night
     for grav in grouped['GRAVITE'].unique():
         df_day = grouped[(grouped['DAY_NIGHT'] == 'Day') & (grouped['GRAVITE'] == grav)]
         counts = df_day.set_index('MS_ACCDN').reindex(range(1, 13), fill_value=0)['Count']
@@ -143,7 +136,6 @@ def accident_severity_month(df):
             visible=False
         ))
 
-    # Buttons for interactivity
     n_grav = len(grouped['GRAVITE'].unique())
     buttons = [
         dict(label="Day",
@@ -173,45 +165,35 @@ def accident_severity_month(df):
 
 
 
-# Function to generate a heatmap of severe accidents by region and month
 def generate_severe_accidents_heatmap(df):
-    # Mapping mois → abréviations
     month_map = {
         1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr',
         5: 'May', 6: 'Jun', 7: 'Jul', 8: 'Aug',
         9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
     }
 
-    # Préparation des données
     df_grave = df[df['GRAVITE'] == 'Mortel ou grave'].dropna(subset=['REG_ADM', 'MS_ACCDN'])
 
-    # Convertir et filtrer les mois
     df_grave['MS_ACCDN'] = pd.to_numeric(df_grave['MS_ACCDN'], errors='coerce').astype('Int64')
     df_grave = df_grave[df_grave['MS_ACCDN'].between(1, 12)]
 
-    # Nettoyage des noms de régions
     df_grave['REG_ADM'] = df_grave['REG_ADM'].str.replace(r"\s*\(\d+\)", "", regex=True)
 
-    # Pivot table
     pivot = df_grave.pivot_table(index='REG_ADM', columns='MS_ACCDN', aggfunc='size', fill_value=0)
 
-    # Forcer tous les mois
     for m in range(1, 13):
         if m not in pivot.columns:
             pivot[m] = 0
 
-    # Réordonner
     pivot = pivot[sorted(pivot.columns)]
 
     x_labels = [month_map[m] for m in pivot.columns]
     y_labels = pivot.index.tolist()
     z_values = pivot.values
 
-    # Construction du texte de hover
     hover_text = [[f"{val} severe accidents in {y_labels[i]} during {x_labels[j]}"
                    for j, val in enumerate(row)] for i, row in enumerate(z_values)]
 
-    # Création de la figure interactive
     fig = go.Figure(data=go.Heatmap(
         z=z_values,
         x=x_labels,
@@ -227,7 +209,8 @@ def generate_severe_accidents_heatmap(df):
         xaxis_title="",
         yaxis_title="Region",
         width=1200,   
-        height=800   
+        height=800,
+        margin=dict(r=250)   
     )
 
     return fig
@@ -242,7 +225,6 @@ df.columns = df.columns.str.strip().str.replace('"', '')
 df = df.rename(columns=lambda x: x.strip())
 
 
-# -- Layout principal de la page --
 layout = html.Div([
     html.H1("Road users and severity analysis", style={
         'textAlign': 'center',

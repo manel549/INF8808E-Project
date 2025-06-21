@@ -1,14 +1,14 @@
-# Environnements virtuels Python
+
 venv/
 .env/
 
-# Fichiers Python compilés
 __pycache__/
 *.pyc
 
-# Fichiers de logs
+
 *.log
 
-# Dossiers liés à l'IDE
 .vscode/
 .idea/
+
+

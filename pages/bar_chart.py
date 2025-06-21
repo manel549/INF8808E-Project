@@ -28,15 +28,7 @@ def get_counts_by_type_and_time(df, time_col='AN', type_col='GRAVITE'):
     grouped.columns = [time_col, type_col, 'count']
     return grouped
 
-def init_figure(title='Accident Frequency in Quebec'):
-    '''
-        Initializes the Graph Object figure used to display the bar chart.
-        Sets the template to be used to "simple_white" as a base with
-        our custom template on top. Sets the title to 'Lines per act'
-
-        Returns:
-            fig: The figure which will display the bar chart
-    '''
+def init_figure(title='Accident frequency in Quebec'):
     fig = go.Figure()
 
     fig.update_layout(
@@ -46,7 +38,7 @@ def init_figure(title='Accident Frequency in Quebec'):
         title=title,
         xaxis_title='Year',
         yaxis_title='',
-        legend_title='Accident Type'
+        legend_title='Accident type'
     )
 
     return fig
@@ -101,8 +93,8 @@ def draw(fig, data, mode, type_col='GRAVITE', granularity='year'):
     fig.update_layout(
         barmode='stack',
         xaxis_title='',
-        yaxis_title='Accident Frequency' if mode == 'count' else 'Accidents (%)',
-        legend_title='Accident Type'
+        yaxis_title='Accident frequency' if mode == 'count' else 'Accidents (%)',
+        legend_title='Accident type'
     )
 
     return fig

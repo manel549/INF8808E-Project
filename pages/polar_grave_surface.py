@@ -30,7 +30,7 @@ lighting_labels = {1: "Daylight and clear", 2: "Daylight and twilight",
                    3: "Night and lit road", 4: "Night and unlit road"}
 seasons = sorted(df['SEASON'].dropna().unique().tolist())
 layout = html.Div([
-    html.H2("Seasonal Radar Visualization", className="text-center", style={'textAlign': 'center',
+    html.H2("Seasonal radar visualization", className="text-center", style={'textAlign': 'center',
         'marginTop': '30px',
         'marginBottom': '30px',
         'fontSize': '34px',
@@ -43,7 +43,7 @@ layout = html.Div([
         html.Summary("Click to expand full description", style={"cursor": "pointer"}),
 
         html.Div([
-            html.H3("Target Questions"),
+            html.H3("Target questions"),
             html.Ul([
                 html.Li("How do weather and road conditions influence the severity of accidents?"),
                 html.Li("Are certain environmental conditions associated with higher accident rates?"),
@@ -97,7 +97,7 @@ def update_polar_chart(season):
             hoverinfo='text', hovertext=hover_texts
         ))
     fig.update_layout(
-        title=f"Number of Severe Accidents ({season})",
+        title=f"Number of severe accidents ({season})",
         polar=dict(
             radialaxis=dict(visible=True, range=[0, max_val * 1.05]),
             angularaxis=dict(tickvals=theta, ticktext=surface_state_labels, rotation=90, direction="clockwise")

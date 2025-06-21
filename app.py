@@ -39,8 +39,6 @@ sidebar = dbc.Nav(
 )
 
 
-
-
 app.layout = dbc.Container([
     dbc.Row([
         dbc.Col(sidebar, width=2),
@@ -78,7 +76,6 @@ def render_page_content(pathname):
         html.P(f"Désolé, la page {pathname} n'existe pas."),
     ])
     
-#pages.temporal_spatial.register_callbacks(app)
 
 server = app.server 
 if __name__ == "__main__":

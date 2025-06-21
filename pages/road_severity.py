@@ -7,6 +7,10 @@ from data import get_dataframe
 
 pio.renderers.default = 'browser'
 
+
+from data import get_dataframe
+
+
 # Charger et nettoyer les données
 COLUMNS = "CD_CATEG_ROUTE, CD_CONFG_ROUTE, GRAVITE"
 df = get_dataframe("data", cols=COLUMNS)
