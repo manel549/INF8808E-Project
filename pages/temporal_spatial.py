@@ -26,22 +26,20 @@ def init_app_layout(fig_bar, fig_map):
     }, children=[
 
         html.H1('Spatio-temporal analysis', style={
-            'marginBottom': '10px',
-            'fontSize': '32px',
             'textAlign': 'center',
-            'fontWeight': '700'
+            'marginTop': '20px',
+            'marginBottom': '30px',
+            'fontSize': '34px',
+            'fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            'color': '#2c3e50'
         }),
 
         html.P(
             "This interactive dashboard visualizes the spatio-temporal distribution of road accidents in Quebec. "
             "Click on a region to explore accident trends over time by severity, and use the time granularity selector "
             "to zoom from annual to daily patterns. The goal is to help identify high-risk zones and better understand accident dynamics.",
-            style={
-                'textAlign': 'center',
-                'fontSize': '15px',
-                'color': '#555',
-                'maxWidth': '900px',
-                'margin': '0 auto 30px auto'
+            style={'textAlign': 'center','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto',
+                'marginRight': 'auto','marginbottom': '30px'
             }
         ),
 
@@ -56,7 +54,7 @@ def init_app_layout(fig_bar, fig_map):
 
             html.Div(style={'flex': '1', 'minWidth': '400px'}, children=[
 
-                html.H2("Accidents by Region", style={'fontSize': '20px', 'fontWeight': '600'}),
+                html.H2("Accidents by Region", style={'textAlign': 'left','fontSize': '25px', 'marginBottom': '20px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
                 dcc.Graph(
                     figure=fig_map,
                     id='accident-map',
@@ -71,7 +69,7 @@ def init_app_layout(fig_bar, fig_map):
             html.Div(style={'flex': '1', 'minWidth': '400px'}, children=[
 
                 html.Div(style={'display': 'flex', 'alignItems': 'center', 'gap': '10px', 'marginBottom': '20px'}, children=[
-                    html.Label("Select time granularity:", style={'fontWeight': '600'}),
+                    html.Label("Select time granularity:", style={'textAlign': 'left','fontSize': '20px', 'marginBottom': '20px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
                     dcc.Dropdown(
                         id='granularity-region-selector',
                         options=[
@@ -100,10 +98,10 @@ def init_app_layout(fig_bar, fig_map):
         ]),
 
         html.Div(style={'width': '100%'}, children=[
-            html.H3("Accidents by Time and Severity (Global)", style={'fontSize': '20px', 'fontWeight': '600'}),
+            html.H3("Accidents by Time and Severity (Global)", style={'textAlign': 'left','fontSize': '25px', 'marginBottom': '20px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
 
             html.Div(style={'display': 'flex', 'alignItems': 'center', 'gap': '10px', 'marginBottom': '20px'}, children=[
-                html.Label("Select Time Granularity:", style={'fontWeight': '600'}),
+                html.Label("Select Time Granularity:", style={'textAlign': 'left','fontSize': '20px', 'marginBottom': '20px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
                 dcc.Dropdown(
                     id='granularity-selector',
                     options=[

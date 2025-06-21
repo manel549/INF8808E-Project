@@ -40,7 +40,9 @@ layout = html.Div([
         "Quebec road accidents insights",
         style={
             'textAlign': 'center',
+            'marginTop': '30px',
             'marginBottom': '40px',
+            'fontSize': '34px',
             'fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
             'color': '#2C3E50'
         }
@@ -55,7 +57,7 @@ layout = html.Div([
                 'fontSize': '18px',
                 'textAlign': 'center',
                 'marginBottom': '50px',
-                'color': '#34495E',
+                'color': '#2c3e50',
                 'maxWidth': '800px',
                 'marginLeft': 'auto',
                 'marginRight': 'auto',
@@ -66,7 +68,7 @@ layout = html.Div([
     ]),
 
     html.Div([
-        html.H2("Key statistics", style={'textAlign': 'center', 'marginBottom': '30px', 'color': '#34495E'}),
+        html.H2("Key statistics", style={'textAlign': 'center', 'fontSize': '34px','marginBottom': '30px','margintop': '30px', 'color': '#2c3e50'}),
 
         html.Div([
             html.Div([

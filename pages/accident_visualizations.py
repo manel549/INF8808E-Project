@@ -259,37 +259,40 @@ layout = html.Div([
     html.H1("Road users and severity analysis", style={
         'textAlign': 'center',
         'marginTop': '30px',
-        'marginBottom': '40px',
+        'marginBottom': '30px',
+        'fontSize': '34px',
+        'fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
         'color': '#2c3e50'
     }),
 
     html.Div([
     html.P("This interactive dashboard offers clear insights into road accident patterns across Quebec. It helps identify which types of road users are most frequently involved in accidents, as well as when and where the most severe accidents tend to occur. This dashboard supports a deeper understanding of road safety dynamics across the province.", style={'marginTop': '20px'}),
-     ], style={'padding': '30px', 'maxWidth': '900px', 'margin': 'auto'}),
+     ], style={'textAlign': 'center','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto',
+                'marginRight': 'auto'}),
 
 
   html.Div([
     dcc.Tabs([
         dcc.Tab(label='Accidents by road user', children=[
             html.Div([
-                html.H3("Road user type involvement", style={'textAlign': 'center'}),
-                html.P("This bar chart breaks down accidents by user type, segmented into day and night and you can toggle between day and night stats."),
+                html.H3("Road user type involvement", style={'textAlign': 'center','marginTop': '30px','marginBottom': '20px','fontSize': '34px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
+                html.P("This bar chart breaks down accidents by user type, segmented into day and night and you can toggle between day and night stats.", style={'textAlign': 'center','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'} ),
                 dcc.Graph(figure=accidents_by_user_type_day_night(df))
             ], style={'padding': '30px'})
         ]),
 
         dcc.Tab(label='Severity by month', children=[
             html.Div([
-                html.H3("Monthly distribution of accident types", style={'textAlign': 'center'}),
-                html.P("This stacked bar chart shows the monthly distribution of road accidents by type. You can toggle between day and night. You can also deselect types by clicking on a category in the legend to hide or show it."),
+                html.H3("Monthly distribution of accident types", style={'textAlign': 'center','marginTop': '30px','marginBottom': '20px','fontSize': '34px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
+                html.P("This stacked bar chart shows the monthly distribution of road accidents by type. You can toggle between day and night. You can also deselect types by clicking on a category in the legend to hide or show it.", style={'textAlign': 'center','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto',}),
                 dcc.Graph(figure=accident_severity_month(df))
             ], style={'padding': '30px'})
         ]),
         dcc.Tab(label='Severe accidents heatmap', children=[
             html.Div([
-                html.H3("Severe accidents by region and month", style={'textAlign': 'center'}),
+                html.H3("Severe accidents by region and month", style={'textAlign': 'center','marginTop': '30px','marginBottom': '20px','fontSize': '34px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
                 html.P("This interactive heatmap shows the monthly distribution of severe road accidents across Quebec’s administrative regions. "
-                       "Darker red cells indicate more severe accidents. When you hover over a cell, you’ll see the region, month, and exact number of accidents."),
+                       "Darker red cells indicate more severe accidents. When you hover over a cell, you’ll see the region, month, and exact number of accidents.", style={'textAlign': 'center','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto',}),
                 dcc.Graph(figure=generate_severe_accidents_heatmap(df)),
 
                 
