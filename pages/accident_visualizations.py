@@ -218,7 +218,8 @@ def generate_severe_accidents_heatmap(df):
         xaxis_title="",
         yaxis_title="Region",
         width=1200,   
-        height=800   
+        height=800,
+        margin=dict(r=250)   
     )
 
     return fig

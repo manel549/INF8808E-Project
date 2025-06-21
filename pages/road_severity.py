@@ -142,7 +142,7 @@ layout = html.Div([
     html.P("This visualization answers the following target questions:", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto','marginbottom': '5px'}),
     html.Ul([
         html.Li("Are accidents more severe on certain types of roads?",style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
-        html.Li("Are severe accidents more likely based on road configuration (e.g., curves, intersections)?", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
+        html.Li("Are severe accidents more likely based on road configuration?", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
     ]),
 
     html.H3("Description", style={

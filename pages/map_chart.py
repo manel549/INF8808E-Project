@@ -57,10 +57,13 @@ def draw_geo_map(df_counts, center_lat=47.5, center_lon=-71.5, zoom=4.5):
         color='region',
         hover_name='region',
         hover_data={'nb_accidents': True, 'latitude': False, 'longitude': False},
-        title='Click a region on the map to display accident trends over time here.',
+        title='',
         custom_data=['region']
     )
-
+    # Update hover template
+    fig.update_traces(
+        hovertemplate="<b>%{hovertext}</b><br>Number of accidents = %{customdata[0]}<extra></extra>"
+    )
     fig.update_layout(
         mapbox_style="open-street-map",  
         mapbox=dict(

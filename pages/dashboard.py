@@ -76,21 +76,12 @@ layout = html.Div([
     html.Div([
    
 
-        html.P("This interactive dashboard is designed to explore how environmental and contextual factors influence the severity and frequency of road accidents in Quebec.", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto','marginRight': '10px'}),
+        html.P("This interactive dashboard is designed to explore how environmental and contextual factors influence the severity and frequency of road accidents in Quebec.Using categorical variables such as weather conditions, road surface state, lighting, construction zones, and the impact of the COVID-19 pandemic, the dashboard offers dynamic visualizations to uncover meaningful patterns.Each chart answers a targeted analytical question, helping to identify high-risk scenarios and support data-driven strategies for public safety and accident prevention.", style={'textAlign': 'center','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
+        
 
-        html.P("Using categorical variables such as weather conditions, road surface state, lighting, construction zones, and the impact of the COVID-19 pandemic, the dashboard offers dynamic visualizations to uncover meaningful patterns.", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto','marginRight': '10px'}),
-
-        html.P("Each chart answers a targeted analytical question, helping to identify high-risk scenarios and support data-driven strategies for public safety and accident prevention.", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto','marginRight': '10px'}),
-
-        html.H3("Questions Explored:", style={
-        'textAlign': 'left',
-        'marginTop': '30px',
-        'marginBottom': '10px',
-        'fontSize': '34px',
-        'fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-        'color': '#2c3e50'}),
         html.Details([
             html.Summary("Click to expand full description", style={"cursor": "pointer",'marginBottom': '20px'}),
+            html.H3("Questions explored:"),
         html.Ul([
             html.Li("How do weather and road conditions influence the severity of accidents?", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
             html.Li("Are certain environmental conditions associated with higher accident rates?", style={'textAlign': 'left','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto','marginRight': 'auto'}),
@@ -372,10 +363,10 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
 
     region_stats = map_df.groupby('Region').agg(
         Total_Accidents=('GRAVITE', 'count'),
-        Materiels=('GRAVITE', lambda x: (x == 'Materials').sum()), 
-        Graves=('GRAVITE', lambda x: (x == 'Severe').sum()),
-        Legers=('GRAVITE', lambda x: (x == 'Light').sum()),
-        Mineurs=('GRAVITE', lambda x: (x == 'Minors').sum()),
+        Materiels=('GRAVITE', lambda x: (x == 'Matériels').sum()), 
+        Graves=('GRAVITE', lambda x: (x == 'Grave').sum()),
+        Legers=('GRAVITE', lambda x: (x == 'Léger').sum()),
+        Mineurs=('GRAVITE', lambda x: (x == 'Mineurs').sum()),
         lat=('lat', 'first'),
         lon=('lon', 'first')
     ).reset_index()
@@ -420,7 +411,7 @@ def update_graph(selected, annee, gravite, meteo, surface, env, road, const):
             zoom=5,
             center={"lat": 46.8, "lon": -71.2},
             height=600,
-            title=f"Accidents by Region - {annee}",
+            title=f"Accidents by region - {annee}",
             color_continuous_scale="YlOrRd",
             labels={color_col: 'Rate (%)'}
         )

@@ -14,31 +14,23 @@ def clean_region_names(df):
     return df
 
 def init_app_layout(fig_bar, fig_map):
-    return html.Div(className='content', style={
-        'fontFamily': 'Open Sans, sans-serif',
-        'padding': '20px',
-        'overflowX': 'hidden',
-        'overflowY': 'hidden',
-        'maxWidth': '100%',
-        'boxSizing': 'border-box'
-    }, children=[
+    return html.Div(  children=[
 
-        html.H1('Spatio-temporal analysis', style={
-            'textAlign': 'center',
-            'marginTop': '20px',
-            'marginBottom': '30px',
-            'fontSize': '34px',
-            'fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-            'color': '#2c3e50'
-        }),
-
+        html.H1("Spatio-temporal analysis",style={
+        'textAlign': 'center',
+        'marginTop': '30px',
+        'marginBottom': '30px',
+        'fontSize': '34px',
+        'fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        'color': '#2c3e50'
+        }
+        ),
         html.P(
             "This interactive dashboard visualizes the spatio-temporal distribution of road accidents in Quebec. "
             "Click on a region to explore accident trends over time by severity, and use the time granularity selector "
             "to zoom from annual to daily patterns. The goal is to help identify high-risk zones and better understand accident dynamics.",
             style={'textAlign': 'center','fontSize': '18px', 'maxWidth': '900px','color': '#2c3e50','marginLeft': 'auto',
-                'marginRight': 'auto','marginbottom': '30px'
-            }
+                'marginRight': 'auto'}
         ),
 
         html.Div(className='row', style={
@@ -52,7 +44,12 @@ def init_app_layout(fig_bar, fig_map):
 
             html.Div(style={'flex': '1', 'minWidth': '400px'}, children=[
 
-                html.H2("Accidents by region", style={'textAlign': 'left','fontSize': '25px', 'marginBottom': '20px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
+                html.H2("Accidents by region", style={
+        'marginRight':'30px',
+        'fontSize': '30px',
+        'fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+        'color': '#2c3e50'} ),
+                html.P("Click a region on the map to display accident trends over time here."),
                 dcc.Graph(
                     figure=fig_map,
                     id='accident-map',
@@ -67,7 +64,7 @@ def init_app_layout(fig_bar, fig_map):
             html.Div(style={'flex': '1', 'minWidth': '400px'}, children=[
 
                 html.Div(style={'display': 'flex', 'alignItems': 'center', 'gap': '10px', 'marginBottom': '20px'}, children=[
-                    html.Label("Select time granularity:", style={'textAlign': 'left','fontSize': '20px', 'marginBottom': '20px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
+                    html.Label("Select time granularity:"),
                     dcc.Dropdown(
                         id='granularity-region-selector',
                         options=[
@@ -99,7 +96,7 @@ def init_app_layout(fig_bar, fig_map):
             html.H3("Accidents by time and type (Global)", style={'textAlign': 'left','fontSize': '25px', 'marginBottom': '20px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
 
             html.Div(style={'display': 'flex', 'alignItems': 'center', 'gap': '10px', 'marginBottom': '20px'}, children=[
-                html.Label("Select time granularity:", style={'textAlign': 'left','fontSize': '20px', 'marginBottom': '20px','fontFamily': "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",'color': '#2c3e50'}),
+                html.Label("Select time granularity:"),
                 dcc.Dropdown(
                     id='granularity-selector',
                     options=[
@@ -123,7 +120,6 @@ def init_app_layout(fig_bar, fig_map):
         ])
     ])
 
-create_template()
 COLUMNS = "REG_ADM, JR_SEMN_ACCDN, GRAVITE, AN"
 df_global = get_dataframe("data", cols=COLUMNS)
 
